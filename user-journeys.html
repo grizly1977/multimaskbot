@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multimasking Academy Bot — User Journeys</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ─── Header ─────────────────────────────── */
+#hdr{background:#1e293b;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#hdr-left{display:flex;align-items:center;gap:12px}
+#hdr h1{font-size:16px;font-weight:700;letter-spacing:.2px}
+#hdr p{font-size:12px;color:#94a3b8}
+#hdr-badge{background:#6366f1;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.3px}
+
+/* ─── Journey selector ───────────────────── */
+#jbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;overflow-x:auto}
+#jbar .jlbl{font-size:11px;font-weight:700;color:#94a3b8;white-space:nowrap;margin-right:4px;text-transform:uppercase;letter-spacing:.5px}
+.jbtn{padding:5px 13px;border-radius:20px;border:1.5px solid #e2e8f0;background:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;color:#475569;transition:all .15s;line-height:1.4}
+.jbtn:hover{border-color:#6366f1;color:#6366f1}
+.jbtn.active{background:#6366f1;border-color:#6366f1;color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.35)}
+
+/* ─── Main layout ────────────────────────── */
+#main{display:flex;flex:1;overflow:hidden}
+
+/* ─── Diagram area ───────────────────────── */
+#dwrap{flex:1;overflow:auto;padding:20px;background:#f1f5f9}
+#dcanvas{position:relative;width:1520px;height:1230px;background:#fff;border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+#svg-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* ─── Section backgrounds ────────────────── */
+.sec{position:absolute;border-radius:14px;border:1.5px dashed;pointer-events:none}
+.sec-lbl{position:absolute;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;opacity:.7;pointer-events:none}
+
+/* ─── Nodes ──────────────────────────────── */
+.node{position:absolute;width:180px;transform:translate(-90px,-36px);border-radius:12px;padding:10px 14px;cursor:pointer;border:2px solid transparent;transition:transform .12s,box-shadow .12s,opacity .2s;display:flex;flex-direction:column;gap:3px;box-shadow:0 2px 8px rgba(0,0,0,.07);user-select:none}
+.node:hover{transform:translate(-90px,-40px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.node.sel{box-shadow:0 0 0 3px rgba(99,102,241,.5),0 4px 16px rgba(0,0,0,.12)}
+.node.dim{opacity:.18;pointer-events:none}
+.node.hl{opacity:1}
+.node-id{font-size:9px;font-weight:800;letter-spacing:.8px;opacity:.55;text-transform:uppercase}
+.node-icon{font-size:16px;line-height:1;margin-bottom:1px}
+.node-title{font-size:12px;font-weight:700;line-height:1.3}
+.node-sub{font-size:10.5px;opacity:.65;line-height:1.3}
+
+/* Category colours */
+.c-entry{background:#ede9fe;border-color:#7c3aed;color:#3b0764}
+.c-neutral{background:#f0f9ff;border-color:#0284c7;color:#0c4a6e}
+.c-success{background:#dcfce7;border-color:#16a34a;color:#14532d}
+.c-error{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+.c-pending{background:#fef3c7;border-color:#d97706;color:#78350f}
+.c-agreement{background:#faf5ff;border-color:#9333ea;color:#3b0764}
+.c-active{background:#d1fae5;border-color:#059669;color:#064e3b}
+.c-saved{background:#e0f2fe;border-color:#0284c7;color:#0c4a6e}
+.c-warning{background:#fff7ed;border-color:#ea580c;color:#7c2d12}
+.c-removed{background:#f3f4f6;border-color:#6b7280;color:#1f2937}
+
+/* ─── Detail panel ───────────────────────── */
+#dpanel{width:0;background:#fff;border-left:1px solid #e2e8f0;overflow:hidden;transition:width .28s cubic-bezier(.4,0,.2,1);flex-shrink:0;display:flex;flex-direction:column}
+#dpanel.open{width:440px}
+#dinner{width:440px;overflow-y:auto;flex:1;padding:24px 24px 40px}
+.d-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:10px}
+.d-id{font-size:10px;font-weight:800;letter-spacing:.8px;padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:5px;text-transform:uppercase}
+.d-name{font-size:17px;font-weight:800;line-height:1.25;color:#0f172a}
+.d-close{background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;padding:4px 6px;border-radius:6px;flex-shrink:0;transition:background .12s}
+.d-close:hover{background:#f1f5f9}
+.d-sec{margin-bottom:20px}
+.d-sec-title{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px}
+.d-text{font-size:13px;line-height:1.65;color:#334155}
+.d-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.d-list li{font-size:13px;color:#334155;display:flex;align-items:flex-start;gap:7px;line-height:1.55}
+.d-list li::before{content:'→';color:#94a3b8;flex-shrink:0;font-size:11px;margin-top:2px}
+.bot-msg{background:#f8fafc;border-left:3px solid #6366f1;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.7;color:#334155;white-space:pre-line}
+.state-pill{display:inline-block;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.3px;margin:2px;cursor:pointer;transition:opacity .1s}
+.state-pill:hover{opacity:.75}
+.next-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;margin:3px;cursor:pointer;border:1.5px solid;transition:all .12s}
+.next-pill:hover{opacity:.8}
+.err-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#dc2626;line-height:1.5;margin-bottom:4px}
+.err-item::before{content:'⚠';flex-shrink:0}
+.divider{border:none;border-top:1px solid #f1f5f9;margin:16px 0}
+.biz-logic{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.65;color:#78350f}
+.state-badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:#1e293b;color:#fff;letter-spacing:.3px}
+
+/* ─── Legend ─────────────────────────────── */
+#legend{position:absolute;bottom:16px;left:16px;background:rgba(255,255,255,.95);backdrop-filter:blur(4px);border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);z-index:10}
+.leg-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:8px}
+.leg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px 16px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#475569;white-space:nowrap}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;border:1.5px solid}
+
+/* ─── Scroll hint ────────────────────────── */
+#scroll-hint{position:fixed;bottom:20px;right:420px;background:rgba(15,23,42,.85);color:#e2e8f0;font-size:12px;padding:8px 14px;border-radius:20px;pointer-events:none;transition:opacity .3s;opacity:0}
+#scroll-hint.show{opacity:1}
+
+/* ─── Telegram mockup ────────────────────── */
+.tg-wrap{background:#0e1621;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.22)}
+.tg-hdr{background:#17212b;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.tg-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5b6af0,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-.5px}
+.tg-bot-name{font-size:13px;font-weight:700;color:#e8eaed;line-height:1.2}
+.tg-bot-sub{font-size:10px;color:#5d7e96;margin-top:1px}
+.tg-body{padding:12px 10px 14px;display:flex;flex-direction:column;gap:6px;min-height:60px}
+.tg-note{background:rgba(255,255,255,.06);border-radius:8px;padding:8px 12px;text-align:center;font-size:11px;color:#5d7e96;font-style:italic}
+.tg-user-wrap{align-self:flex-end;max-width:82%}
+.tg-user-inner{background:#2b5278;border-radius:14px 4px 14px 14px;padding:9px 12px}
+.tg-user-text{font-size:13px;color:#fff;line-height:1.55;word-break:break-word}
+.tg-user-time{font-size:10px;color:#8ba5be;text-align:right;margin-top:3px}
+.tg-bubble-wrap{max-width:92%;display:flex;flex-direction:column}
+.tg-bubble{background:#17212b;border-radius:4px 14px 14px 14px;padding:10px 13px}
+.tg-bubble-text{font-size:13px;color:#d8dde5;line-height:1.6;white-space:pre-line;word-break:break-word}
+.tg-bubble-time{font-size:10px;color:#5d7e96;text-align:right;margin-top:5px}
+.tg-btns{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.tg-btn-row{display:flex;gap:3px}
+.tg-btn-el{flex:1;background:#17212b;border:none;border-radius:10px;padding:9px 12px;font-size:12.5px;font-weight:500;color:#6ab3f3;cursor:default;text-align:center;font-family:inherit;line-height:1.3;border:1px solid rgba(106,179,243,.15)}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-left">
+    <div>
+      <h1>Multimasking Academy Bot</h1>
+      <p>Інтерактивна архітектура сценаріїв</p>
+    </div>
+  </div>
+  <span id="hdr-badge">17 екранів · 9 сценаріїв</span>
+</div>
+
+<div id="jbar">
+  <span class="jlbl">Сценарій:</span>
+</div>
+
+<div id="main">
+  <div id="dwrap">
+    <div id="dcanvas">
+      <svg id="svg-layer"><defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+        </marker>
+        <marker id="arr-hi" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#6366f1"/>
+        </marker>
+        <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#16a34a"/>
+        </marker>
+        <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#dc2626"/>
+        </marker>
+        <marker id="arr-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#d97706"/>
+        </marker>
+        <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#ea580c"/>
+        </marker>
+      </defs></svg>
+      <div id="nodes-layer"></div>
+
+      <!-- Section labels -->
+      <div class="sec" style="left:60px;top:40px;width:1080px;height:1170px;border-color:#e2e8f0;background:transparent"></div>
+      <div class="sec-lbl" style="left:72px;top:28px;color:#94a3b8">Основний Flow</div>
+
+      <div class="sec" style="left:1160px;top:140px;width:320px;height:280px;border-color:#bfdbfe;background:#f0f9ff20"></div>
+      <div class="sec-lbl" style="left:1172px;top:128px;color:#0284c7">Повернення</div>
+
+      <div class="sec" style="left:1160px;top:580px;width:320px;height:450px;border-color:#fed7aa;background:#fff7ed20"></div>
+      <div class="sec-lbl" style="left:1172px;top:568px;color:#ea580c">Renewal Flow</div>
+
+      <div id="legend">
+        <div class="leg-title">Легенда</div>
+        <div class="leg-grid">
+          <div class="leg-item"><div class="leg-dot" style="background:#ede9fe;border-color:#7c3aed"></div>Точка входу</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#dcfce7;border-color:#16a34a"></div>Успіх</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#fee2e2;border-color:#dc2626"></div>Помилка</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#fef3c7;border-color:#d97706"></div>Очікування</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#faf5ff;border-color:#9333ea"></div>Угода</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#fff7ed;border-color:#ea580c"></div>Попередження</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dpanel">
+    <div id="dinner"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+const W = 90, H = 36; // half-width, half-height for port calc
+
+const NODES = {
+  S0:  { id:'S0',  title:'Welcome / Bot intro',           icon:'👋', cat:'c-entry',    cx:600,  cy:80,
+    sub:'Системне intro Telegram',
+    when:'Перший відкрив бота, до натискання Start',
+    userCan:['Натиснути Start'],
+    next:['S1'],
+    state:'(системний стан Telegram)',
+    trigger:'Відкриття бота',
+    condition:null,
+    biz:'Це системне intro-повідомлення Telegram — бот його не контролює. Тут відображається назва бота, аватар і короткий опис, встановлений в BotFather. Бот починає роботу тільки після натискання Start.',
+    errors:[],
+    repeat:'Після кожного відкриття нового чату з ботом',
+    tgNote:'Системний екран Telegram до натискання /start. Відображається опис бота з BotFather.',
+    tgMsg:null, tgBtns:[] },
+
+  S1:  { id:'S1',  title:'Запит email',                   icon:'✉️', cat:'c-neutral',  cx:600,  cy:200,
+    sub:'Ввести email від акаунту в Kwiga',
+    when:'Перший вхід або немає збереженого email',
+    userCan:['Ввести email','Написати довільний текст (буде помилка валідації)'],
+    next:['S2','S3','S4'],
+    state:'awaiting_email',
+    trigger:'/start нового користувача або стан awaiting_email',
+    condition:'Немає збереженого email або стан awaiting_email',
+    biz:'Бот переходить у стан awaiting_email. Будь-яке наступне повідомлення трактується як email. Невалідний формат → показати помилку + залишитись в awaiting_email. Валідний формат → перевірка через Kwiga API.',
+    errors:['Невалідний формат email → показати помилку, залишитись в S1','API timeout → S4','API unavailable → S4','Unexpected API response → S4'],
+    repeat:'Користувач може вводити email багаторазово до успішної перевірки. Кожна спроба — нова перевірка API.',
+    tgMsg:'Вітаємо! 👋\n\nЩоб почати, введіть email, який прив\'язаний до вашого акаунта в Kwiga.',
+    tgBtns:[], tgNote:'Очікує введення email. Кнопок немає — користувач друкує вручну.' },
+
+  S2:  { id:'S2',  title:'Email знайдено',                icon:'✅', cat:'c-success',  cx:600,  cy:360,
+    sub:'Email підтверджено, пропонуємо підписку',
+    when:'Після успішної перевірки email в Kwiga',
+    userCan:['Перейти до оплати (кнопка)','Скористатися командами /profile, /payment, /change_email'],
+    next:['S5','S13'],
+    state:'email_verified',
+    trigger:'Kwiga API повернув "знайдено"',
+    condition:'Email знайдено в базі. Якщо підписка вже активна → S13',
+    biz:'1. Зберегти email в профілі користувача. 2. Перевірити, чи є активна підписка — якщо так, одразу S13. 3. Якщо підписки немає — показати екран підписки та CTA-кнопку. ⚠️ При повторному /start цей екран не показувати, якщо email вже збережено.',
+    errors:['Якщо не вдалося зберегти email локально → показати помилку і попросити повторити'],
+    repeat:'При повторному /start — не показувати, якщо email вже збережено → S14 або S13',
+    tgUserMsg:'user@example.com',
+    tgMsg:'✅ Дякуємо! Ми знайшли ваш email:\nuser@example.com\n\nДоступ до професійної спільноти відкривається через підписку 1 грн/місяць.\n\nПісля активації підписки потрібно буде прийняти правила доступу до спільноти.\n\nДоступні команди:\n/profile · /payment · /change_email',
+    tgBtns:['💳 Підписатися за 1 грн/місяць'] },
+
+  S3:  { id:'S3',  title:'Email не знайдено',             icon:'❌', cat:'c-error',    cx:200,  cy:360,
+    sub:'Email відсутній в базі Kwiga',
+    when:'Після негативної перевірки email',
+    userCan:['Ввести інший email','Звернутися до підтримки'],
+    next:['S1'],
+    state:'email_not_found',
+    trigger:'Kwiga API повернув "не знайдено"',
+    condition:'Email не існує в базі Kwiga',
+    biz:'Показати повідомлення про відмову. Надати можливість ввести новий email. Не блокувати повторні спроби — повернутись до S1.',
+    errors:[],
+    repeat:'Повернення до S1 для повторного вводу email',
+    tgUserMsg:'wrongemail@gmail.com',
+    tgMsg:'❌ Ми не знайшли цей email у базі.\n\nПеревірте адресу та спробуйте ще раз або зверніться в підтримку.',
+    tgBtns:['📞 Написати в підтримку'] },
+
+  S4:  { id:'S4',  title:'Помилка перевірки email',       icon:'⚠️', cat:'c-error',    cx:1000, cy:360,
+    sub:'API недоступний або технічна помилка',
+    when:'API недоступний / timeout / помилка системи',
+    userCan:['Спробувати пізніше','Звернутися до підтримки'],
+    next:['S1'],
+    state:'api_error',
+    trigger:'API timeout, недоступність сервісу, непередбачена відповідь',
+    condition:'Kwiga API повернув помилку або не відповів',
+    biz:'1. Зафіксувати помилку в логах. 2. Показати нейтральне повідомлення БЕЗ технічних деталей. 3. Надати можливість повторити спробу. Ловити: invalid format, API timeout, API unavailable, unexpected response.',
+    errors:['API timeout → показати помилку + retry','API unavailable → логувати + показати помилку','Unexpected response → логувати + показати помилку'],
+    repeat:'Повернення до S1 для повторної спроби',
+    tgMsg:'⚠️ Виникла технічна помилка при перевірці email.\n\nСпробуйте ще раз пізніше або зверніться в підтримку.',
+    tgBtns:['🔄 Спробувати ще раз','📞 Написати в підтримку'] },
+
+  S5:  { id:'S5',  title:'Екран підписки / оплати',       icon:'💳', cat:'c-neutral',  cx:600,  cy:500,
+    sub:'Підписка 1 грн/місяць — перейти до оплати',
+    when:'Email підтверджено, немає активної підписки',
+    userCan:['Натиснути "Підписатися за 1 грн/місяць"'],
+    next:['S6'],
+    state:'ready_to_pay',
+    trigger:'Після S2, S9 (retry), S14, S17',
+    condition:'Email підтверджено, активної підписки немає',
+    biz:'⚠️ ВАЖЛИВО: тексти мають чітко говорити "підписка 1 грн/місяць", а НЕ "одноразовий платіж". Показати кнопку переходу до оплати. При повторному запиті — переперевірити наявний pending invoice або створити новий.',
+    errors:['Якщо invoice не вдалося створити → показати помилку + "спробувати знову"','Відсутній payment URL → логувати + помилка'],
+    repeat:'При повторному запиті на оплату — переперевірити актуальний pending invoice або створити новий якщо старий закінчився',
+    tgMsg:'💳 Підписка: 1 грн/місяць\n\nВідкриває доступ до закритої групи Майстрів Multimasking Academy.\n\nПісля оплати потрібно буде прийняти правила спільноти.',
+    tgBtns:['💳 Підписатися за 1 грн/місяць'] },
+
+  S6:  { id:'S6',  title:'Payment initiated',             icon:'🔗', cat:'c-pending',  cx:600,  cy:640,
+    sub:'Відкрита зовнішня сторінка оплати',
+    when:'Після кліку на кнопку оплати',
+    userCan:['Оплатити на зовнішній сторінці','Повернутися в бот'],
+    next:['S7','S8','S9'],
+    state:'payment_initiated',
+    trigger:'Користувач натиснув кнопку оплати',
+    condition:'Щойно ініційовано payment session',
+    biz:'1. Створити payment session / invoice. 2. Зафіксувати internal payment record зі статусом initiated. 3. Відправити сервісне повідомлення. 4. Очікувати webhook або polling. Якщо webhook прийде швидко → S8. Якщо статус pending → S7. Якщо failed → S9.',
+    errors:['Помилка створення invoice → показати помилку + retry','Відсутній payment URL → логувати + помилка','Проблема з платіжним провайдером → підтримка'],
+    repeat:'При поверненні в бот без фінального статусу → перевірити payment status → S7',
+    tgMsg:'🔗 Ми відкрили сторінку оплати.\n\nПісля завершення оплати статус оновиться автоматично.\n\nЯкщо підтвердження не надійде одразу, ми покажемо, що платіж ще обробляється.',
+    tgBtns:[], tgNote:'Кнопок немає — користувач переходить на зовнішню платіжну сторінку.' },
+
+  S7:  { id:'S7',  title:'Payment pending',               icon:'⏳', cat:'c-pending',  cx:250,  cy:800,
+    sub:'Платіж ще обробляється',
+    when:'Є платіж, але немає фінального підтвердження',
+    userCan:['Чекати','Натиснути "Перевірити статус"','Звернутися до підтримки'],
+    next:['S8','S9'],
+    state:'payment_pending',
+    trigger:'Webhook/polling повернув статус pending або processing',
+    condition:'Є payment record зі статусом pending',
+    biz:'При повторному /start показувати САМЕ цей стан. Після оновлення статусу (webhook/polling) автоматично переводити в S8 або S9. Кнопка "Перевірити статус" викликає повторну перевірку status endpoint.',
+    errors:['Timeout при перевірці статусу → показати pending + retry пізніше','Inconsistent provider state → логувати + підтримка'],
+    repeat:'Повторний /start → показати pending state, НЕ дублювати повідомлення',
+    tgMsg:'⏳ Ми обробляємо ваш платіж. Це може зайняти кілька хвилин.\n\nЩойно отримаємо підтвердження, одразу повідомимо вас тут.',
+    tgBtns:['🔄 Перевірити статус','📞 Підтримка'] },
+
+  S8:  { id:'S8',  title:'Payment success',               icon:'🎉', cat:'c-success',  cx:600,  cy:800,
+    sub:'Підписку активовано успішно',
+    when:'Після підтвердженого платежу (webhook success)',
+    userCan:['Перейти до угоди','Переглянути статус'],
+    next:['S10'],
+    state:'payment_success',
+    trigger:'Webhook або polling повернув success',
+    condition:'Підтверджено успішний перший або повторний платіж',
+    biz:'1. Активувати підписку. 2. Зберегти дату закінчення (поточна дата + 30 днів). 3. Ідемпотентна логіка: НЕ слати success повторно якщо вже відправлялось. 4. При повторному /start після успіху → S13 (active state), а не знову S8.',
+    errors:['Якщо success прийшов, але не вдалося активувати → логувати інцидент + повідомити користувача + підтримка'],
+    repeat:'Success має бути idempotent. Повторний /start після успіху → S13',
+    tgMsg:'🎉 Вітаємо! Підписку 1 грн/місяць активовано.\n\nВаш доступ діє до 23.05.2026.\n\nЩоб перейти до спільноти, спочатку прийміть правила користування.',
+    tgBtns:['📋 Прийняти умови та перейти до групи'] },
+
+  S9:  { id:'S9',  title:'Payment failed',                icon:'💔', cat:'c-error',    cx:950,  cy:800,
+    sub:'Платіж відхилено або не підтверджено',
+    when:'Після failed-status від платіжної системи',
+    userCan:['Спробувати знову','Звернутися до підтримки'],
+    next:['S5'],
+    state:'payment_failed',
+    trigger:'Webhook або polling повернув failed',
+    condition:'Платіж відхилений або не завершений',
+    biz:'1. Зафіксувати код помилки платіжної системи (якщо доступний). 2. Показати нейтральний текст БЕЗ технічних деталей. 3. Дозволити повторну спробу через S5.',
+    errors:['Невідома причина failure → нейтральний текст без кодів помилок'],
+    repeat:'Користувач може повторно пройти оплату — повернення до S5',
+    tgMsg:'💔 Оплату не підтверджено.\n\nСпробуйте ще раз або зверніться в підтримку.',
+    tgBtns:['🔄 Спробувати ще раз','📞 Підтримка'] },
+
+  S10: { id:'S10', title:'User Agreement',                icon:'📋', cat:'c-agreement',cx:600,  cy:960,
+    sub:'Прийняти угоду перед входом в групу',
+    when:'Після успішної оплати, до входу в групу',
+    userCan:['Натиснути "Приймаю" ✅','Натиснути "Не приймаю" ❌'],
+    next:['S11','S12'],
+    state:'agreement_pending',
+    trigger:'Після S8 (success), якщо угоду ще не прийнято',
+    condition:'Підписка активна, угоду ще не прийнято',
+    biz:'Invite link в групу НЕ видавати до прийняття угоди. Якщо угода вже прийнята раніше — пропустити і перейти одразу до S11. Якщо не вдалося зберегти факт прийняття → НЕ відкривати доступ + показати помилку.',
+    errors:['Не вдалося зберегти факт прийняття → НЕ відкривати доступ + показати помилку'],
+    repeat:'Якщо угода вже прийнята — повторно не запитувати',
+    tgMsg:'📋 Правила доступу до спільноти Майстрів\n\nПриймаючи ці правила, ви погоджуєтесь:\n— Поважати всіх учасників спільноти\n— Не розповсюджувати матеріали групи поза спільнотою\n— Дотримуватись правил Telegram\n— Не публікувати рекламу без погодження\n\nПовний текст: [посилання на правила]',
+    tgBtns:['✅ Приймаю','❌ Не приймаю'] },
+
+  S11: { id:'S11', title:'Access granted to group',       icon:'🔓', cat:'c-success',  cx:400,  cy:1110,
+    sub:'Invite link в групу для Майстрів',
+    when:'Після прийняття угоди',
+    userCan:['Перейти в "Групу для Майстрів"'],
+    next:[],
+    state:'active_subscription',
+    trigger:'Користувач натиснув "Приймаю" в угоді',
+    condition:'Угоду прийнято, підписка активна',
+    biz:'1. Видати invite link. 2. Позначити, що invite link вже видавався (уникати дублювання). 3. Якщо користувач загубив посилання → по /start → S13, де є кнопка входу знову.',
+    errors:[],
+    repeat:'При повторному /start → S13, де є кнопка переходу в групу',
+    tgMsg:'🔓 Дякуємо. Тепер ви можете перейти до професійної спільноти майстрів Multimasking Academy.',
+    tgBtns:['👥 Група для Майстрів'] },
+
+  S12: { id:'S12', title:'Agreement declined',            icon:'🚫', cat:'c-error',    cx:800,  cy:1110,
+    sub:'Доступ заблоковано без угоди',
+    when:'Якщо угоду не прийнято',
+    userCan:['Натиснути "Повернутися до угоди"'],
+    next:['S10'],
+    state:'agreement_declined',
+    trigger:'Користувач натиснув "Не приймаю"',
+    condition:'Угоду відхилено',
+    biz:'Invite link НЕ видавати. Показати пояснення і кнопку повернення до угоди. Доступ залишається заблокованим до явного прийняття.',
+    errors:[],
+    repeat:'Користувач може повернутися до угоди і прийняти її будь-коли',
+    tgMsg:'🚫 Доступ до спільноти можливий тільки після прийняття правил.\n\nБез підтвердження ми не можемо надати вам доступ до групи.',
+    tgBtns:['📋 Повернутися до угоди'] },
+
+  S13: { id:'S13', title:'Already active subscriber',    icon:'⭐', cat:'c-active',   cx:1280, cy:200,
+    sub:'Підписка активна — відновлений стан',
+    when:'Повторний /start при активній підписці',
+    userCan:['Перейти в групу','Переглянути /profile'],
+    next:['S11','S15'],
+    state:'active_subscription',
+    trigger:'Повторний /start при активній підписці',
+    condition:'Email збережено, підписка активна, угоду прийнято',
+    biz:'Бот відновлює стан: показує email, дату закінчення підписки + кнопку групи. НЕ повторює онбординг. Якщо renewal fails → перейде до S15.',
+    errors:[],
+    repeat:'Основний стан для повторного входу активного користувача',
+    tgMsg:'⭐ У вас вже активна підписка до 23.05.2026.\n\nВи можете перейти до спільноти нижче.',
+    tgBtns:['👥 Група для Майстрів'] },
+
+  S14: { id:'S14', title:'Email saved, no payment',      icon:'📧', cat:'c-saved',    cx:1280, cy:360,
+    sub:'Email є, оплати ще немає',
+    when:'Повторний /start: email є, підписки немає',
+    userCan:['Оплатити підписку'],
+    next:['S5'],
+    state:'email_verified_no_payment',
+    trigger:'Повторний /start: email є, підписки немає, немає pending payment',
+    condition:'Email збережено, підписка не активна, немає pending payment',
+    biz:'Відновлений стан. НЕ просити email знову. Одразу показати збережений email і кнопку оплати.',
+    errors:[],
+    repeat:'Показується при кожному /start до моменту оплати',
+    tgMsg:'📧 Ваш email вже збережено:\nuser@example.com\n\nЩоб отримати доступ до спільноти, оформіть підписку 1 грн/місяць.',
+    tgBtns:['💳 Підписатися за 1 грн/місяць'] },
+
+  S15: { id:'S15', title:'Renewal warning',              icon:'🔔', cat:'c-warning',  cx:1280, cy:640,
+    sub:'Автоплатіж не пройшов — перше попередження',
+    when:'Автоплатіж не пройшов',
+    userCan:['Поновити оплату'],
+    next:['S13','S16'],
+    state:'renewal_failed',
+    trigger:'Автосписання не пройшло (renewal failed)',
+    condition:'Поточна підписка не продовжилася',
+    biz:'Перше з 3 нагадувань за 5 днів. Якщо оплатив → S13 (active). Якщо ні → S16. НЕ слати нескінченні нагадування — максимум 3 за 5 днів.',
+    errors:['Не допускати видалення якщо статус вже відновлено'],
+    repeat:'До 3 нагадувань за 5 днів. Якщо оплачено між нагадуваннями — зупинити',
+    tgMsg:'🔔 Нам не вдалося продовжити вашу підписку.\n\nЩоб зберегти доступ до спільноти, поновіть оплату протягом 5 днів.',
+    tgBtns:['💳 Поновити підписку'] },
+
+  S16: { id:'S16', title:'Final removal warning',        icon:'⏰', cat:'c-warning',  cx:1280, cy:800,
+    sub:'Останнє попередження перед видаленням',
+    when:'В межах grace period після renewal fail',
+    userCan:['Оплатити зараз'],
+    next:['S13','S17'],
+    state:'renewal_grace_period',
+    trigger:'3-тє нагадування протягом 5 днів',
+    condition:'Grace period закінчується, оплати ще немає',
+    biz:'Якщо оплатив → S13. Якщо не оплатив у термін → видалити з групи через Telegram Bot API → S17.',
+    errors:['Не допускати видалення якщо статус вже відновлено між перевірками'],
+    repeat:'Фінальне нагадування — після нього або оплата, або S17',
+    tgMsg:'⏰ Це останнє нагадування.\n\nЯкщо оплата не надійде сьогодні, доступ до спільноти буде закрито.',
+    tgBtns:['💳 Оплатити зараз'] },
+
+  S17: { id:'S17', title:'Subscription expired / removed', icon:'🔒', cat:'c-removed', cx:1280, cy:960,
+    sub:'Видалено з групи — підписка закінчилась',
+    when:'Підписка не продовжилася в строк',
+    userCan:['Оформити підписку знову'],
+    next:['S5'],
+    state:'removed_from_group',
+    trigger:'5-й день без оплати після renewal fail',
+    condition:'Grace period вичерпано, підписка не продовжена',
+    biz:'1. Видалити користувача з групи через Telegram Bot API. 2. Відправити фінальне повідомлення. 3. Зберегти email і дані для повторного оформлення. При повторному /start → S14 або одразу до S5.',
+    errors:[],
+    repeat:'При повторному /start → S14 (email є, немає підписки) або S5',
+    tgMsg:'🔒 Ваш доступ до спільноти закрито у зв\'язку з закінченням підписки.\n\nЩоб відновити доступ, оформіть підписку знову.',
+    tgBtns:['💳 Підписатися за 1 грн/місяць'] },
+};
+
+/* ─── CONNECTIONS ────────────────────────── */
+// Each: { id, from, to, label, path, color, dashed }
+// path is SVG d attribute with absolute coords
+const CONNS = [
+  // ── Main vertical spine ──
+  { id:'S0-S1',   from:'S0',  to:'S1',  label:'',              path:`M 600 116 L 600 164`,                                         color:'#94a3b8' },
+  { id:'S1-S2',   from:'S1',  to:'S2',  label:'знайдено',       path:`M 600 236 L 600 324`,                                         color:'#16a34a' },
+  { id:'S2-S5',   from:'S2',  to:'S5',  label:'',              path:`M 600 396 L 600 464`,                                         color:'#94a3b8' },
+  { id:'S5-S6',   from:'S5',  to:'S6',  label:'',              path:`M 600 536 L 600 604`,                                         color:'#94a3b8' },
+  { id:'S6-S8',   from:'S6',  to:'S8',  label:'success',        path:`M 600 676 L 600 764`,                                         color:'#16a34a' },
+  { id:'S8-S10',  from:'S8',  to:'S10', label:'',              path:`M 600 836 L 600 924`,                                         color:'#9333ea' },
+  { id:'S10-S11', from:'S10', to:'S11', label:'прийнято',       path:`M 570 996 C 540 1060 450 1074 450 1074`,                      color:'#16a34a' },
+
+  // ── Left branches ──
+  { id:'S1-S3',   from:'S1',  to:'S3',  label:'не знайдено',    path:`M 560 210 C 380 210 200 290 200 324`,                         color:'#dc2626' },
+  { id:'S6-S7',   from:'S6',  to:'S7',  label:'pending',        path:`M 560 650 C 420 650 290 750 290 764`,                         color:'#d97706' },
+  { id:'S10-S12', from:'S10', to:'S12', label:'не прийнято',    path:`M 640 996 C 680 1060 760 1074 760 1074`,                      color:'#dc2626' },
+
+  // ── Right branches ──
+  { id:'S1-S4',   from:'S1',  to:'S4',  label:'помилка API',    path:`M 640 210 C 820 210 1000 290 1000 324`,                       color:'#dc2626' },
+  { id:'S6-S9',   from:'S6',  to:'S9',  label:'failed',         path:`M 640 650 C 780 650 910 750 910 764`,                         color:'#dc2626' },
+
+  // ── Loop-backs (going up) ──
+  { id:'S3-S1',   from:'S3',  to:'S1',  label:'ввести знову',   path:`M 110 360 C 30 360 30 200 510 200`,                           color:'#dc2626', dashed:true },
+  { id:'S4-S1',   from:'S4',  to:'S1',  label:'спробувати',     path:`M 1090 360 C 1160 360 1160 200 690 200`,                      color:'#dc2626', dashed:true },
+  { id:'S9-S5',   from:'S9',  to:'S5',  label:'спробувати знову',path:`M 1040 800 C 1130 800 1130 500 690 500`,                     color:'#dc2626', dashed:true },
+  { id:'S12-S10', from:'S12', to:'S10', label:'повернутися',    path:`M 890 1110 C 980 1110 980 960 690 960`,                       color:'#94a3b8', dashed:true },
+
+  // ── Pending to success/fail ──
+  { id:'S7-S8',   from:'S7',  to:'S8',  label:'підтверджено',   path:`M 340 800 C 450 800 510 800 510 800`,                         color:'#16a34a' },
+  { id:'S7-S9',   from:'S7',  to:'S9',  label:'відхилено',      path:`M 290 836 C 290 900 910 900 910 836`,                         color:'#dc2626', dashed:true },
+
+  // ── Email already active shortcut ──
+  { id:'S2-S13',  from:'S2',  to:'S13', label:'вже активна',    path:`M 690 360 C 900 360 1280 290 1280 236`,                       color:'#059669', dashed:true },
+
+  // ── Return state connections ──
+  { id:'S14-S5',  from:'S14', to:'S5',  label:'оплатити',       path:`M 1190 360 C 1050 360 740 500 690 500`,                       color:'#0284c7' },
+  { id:'S13-S11', from:'S13', to:'S11', label:'до групи',        path:`M 1280 236 C 1280 700 550 1110 490 1110`,                     color:'#059669', dashed:true },
+
+  // ── Renewal flow (right column) ──
+  { id:'S13-S15', from:'S13', to:'S15', label:'renewal fail',   path:`M 1280 236 L 1280 604`,                                       color:'#ea580c' },
+  { id:'S15-S16', from:'S15', to:'S16', label:'не оплачено',    path:`M 1280 676 L 1280 764`,                                       color:'#ea580c' },
+  { id:'S16-S17', from:'S16', to:'S17', label:'не оплачено',    path:`M 1280 836 L 1280 924`,                                       color:'#dc2626' },
+  { id:'S15-S13', from:'S15', to:'S13', label:'оплачено ✓',     path:`M 1190 640 C 1080 640 1080 200 1190 200`,                     color:'#16a34a', dashed:true },
+  { id:'S16-S13', from:'S16', to:'S13', label:'оплачено ✓',     path:`M 1190 800 C 1050 800 1050 200 1190 200`,                     color:'#16a34a', dashed:true },
+  { id:'S17-S5',  from:'S17', to:'S5',  label:'підписатись знову',path:`M 1190 960 C 1050 960 760 500 690 500`,                     color:'#6b7280', dashed:true },
+];
+
+/* ─── JOURNEYS ───────────────────────────── */
+const JOURNEYS = [
+  { id:'all',      label:'Всі сценарії',           color:'#6366f1',
+    nodes: Object.keys(NODES),
+    conns: CONNS.map(c=>c.id) },
+
+  { id:'happy',    label:'✅ Happy Path',           color:'#16a34a',
+    nodes: ['S0','S1','S2','S5','S6','S8','S10','S11'],
+    conns: ['S0-S1','S1-S2','S2-S5','S5-S6','S6-S8','S8-S10','S10-S11'] },
+
+  { id:'noemail',  label:'❌ Email не знайдено',    color:'#dc2626',
+    nodes: ['S0','S1','S3'],
+    conns: ['S0-S1','S1-S3','S3-S1'] },
+
+  { id:'apierr',   label:'⚠️ Помилка API',          color:'#dc2626',
+    nodes: ['S0','S1','S4'],
+    conns: ['S0-S1','S1-S4','S4-S1'] },
+
+  { id:'pending',  label:'⏳ Pending платіж',       color:'#d97706',
+    nodes: ['S5','S6','S7','S8','S10','S11'],
+    conns: ['S5-S6','S6-S7','S7-S8','S8-S10','S10-S11'] },
+
+  { id:'payfail',  label:'💔 Оплата не пройшла',   color:'#dc2626',
+    nodes: ['S5','S6','S9'],
+    conns: ['S5-S6','S6-S9','S9-S5'] },
+
+  { id:'agreement',label:'📋 Угода відхилена',      color:'#9333ea',
+    nodes: ['S8','S10','S12'],
+    conns: ['S8-S10','S10-S12','S12-S10'] },
+
+  { id:'returning',label:'🔄 Активний повертається',color:'#059669',
+    nodes: ['S13','S11'],
+    conns: ['S13-S11'] },
+
+  { id:'nopayment',label:'📧 Email є, без оплати',  color:'#0284c7',
+    nodes: ['S14','S5','S6','S8','S10','S11'],
+    conns: ['S14-S5','S5-S6','S6-S8','S8-S10','S10-S11'] },
+
+  { id:'renewal',  label:'🔔 Renewal Flow',         color:'#ea580c',
+    nodes: ['S13','S15','S16','S17','S5'],
+    conns: ['S13-S15','S15-S16','S16-S17','S17-S5','S15-S13','S16-S13'] },
+];
+
+/* ═══════════════════════════════════════════
+   TELEGRAM MOCKUP
+═══════════════════════════════════════════ */
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function buildTgMock(n) {
+  const userBubble = n.tgUserMsg ? `
+    <div class="tg-user-wrap">
+      <div class="tg-user-inner">
+        <div class="tg-user-text">${esc(n.tgUserMsg)}</div>
+        <div class="tg-user-time">14:31</div>
+      </div>
+    </div>` : '';
+
+  const btnsHtml = (n.tgBtns && n.tgBtns.length)
+    ? `<div class="tg-btns">${n.tgBtns.map(b=>`<div class="tg-btn-el">${esc(b)}</div>`).join('')}</div>`
+    : '';
+
+  const botBubble = n.tgMsg ? `
+    <div class="tg-bubble-wrap">
+      <div class="tg-bubble">
+        <div class="tg-bubble-text">${esc(n.tgMsg)}</div>
+        <div class="tg-bubble-time">14:32</div>
+      </div>
+      ${btnsHtml}
+    </div>` : '';
+
+  const noteHtml = n.tgNote ? `<div class="tg-note">${esc(n.tgNote)}</div>` : '';
+
+  return `
+    <div class="tg-wrap">
+      <div class="tg-hdr">
+        <div class="tg-avatar">MA</div>
+        <div>
+          <div class="tg-bot-name">Multimasking Academy Bot</div>
+          <div class="tg-bot-sub">бот</div>
+        </div>
+      </div>
+      <div class="tg-body">
+        ${noteHtml}${userBubble}${botBubble}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+let activeJourney = 'all';
+let selectedNode = null;
+
+function init() {
+  // Build journey buttons
+  const jbar = document.getElementById('jbar');
+  JOURNEYS.forEach(j => {
+    const btn = document.createElement('button');
+    btn.className = 'jbtn' + (j.id === 'all' ? ' active' : '');
+    btn.textContent = j.label;
+    btn.dataset.jid = j.id;
+    btn.addEventListener('click', () => selectJourney(j.id));
+    jbar.appendChild(btn);
+  });
+
+  // Render SVG arrows
+  renderArrows();
+
+  // Render nodes
+  renderNodes();
+}
+
+function renderArrows() {
+  const svg = document.getElementById('svg-layer');
+  // Clear existing paths (keep defs)
+  Array.from(svg.querySelectorAll('path.conn, text.conn-lbl, g.conn-g')).forEach(e => e.remove());
+
+  CONNS.forEach(c => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.classList.add('conn-g');
+    g.dataset.cid = c.id;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.classList.add('conn');
+    path.dataset.cid = c.id;
+    path.setAttribute('d', c.path);
+    path.setAttribute('stroke', '#c8d5e3');
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('marker-end', 'url(#arr)');
+    if (c.dashed) path.setAttribute('stroke-dasharray', '5,4');
+    g.appendChild(path);
+
+    if (c.label) {
+      // compute midpoint from path
+      const mid = getMidPoint(c.path);
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', mid.x - 30);
+      rect.setAttribute('y', mid.y - 8);
+      rect.setAttribute('width', '60');
+      rect.setAttribute('height', '14');
+      rect.setAttribute('rx', '4');
+      rect.setAttribute('fill', 'white');
+      rect.setAttribute('opacity', '0.85');
+      g.appendChild(rect);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.classList.add('conn-lbl');
+      txt.setAttribute('x', mid.x);
+      txt.setAttribute('y', mid.y + 3);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('font-size', '9');
+      txt.setAttribute('font-weight', '600');
+      txt.setAttribute('font-family', '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif');
+      txt.setAttribute('fill', '#64748b');
+      txt.textContent = c.label;
+      g.appendChild(txt);
+    }
+
+    svg.appendChild(g);
+  });
+}
+
+function getMidPoint(pathStr) {
+  // Create a temp SVG path element and use getTotalLength
+  const tmpSvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  tmpSvg.style.position = 'absolute'; tmpSvg.style.visibility = 'hidden';
+  document.body.appendChild(tmpSvg);
+  const tmpPath = document.createElementNS('http://www.w3.org/2000/svg','path');
+  tmpPath.setAttribute('d', pathStr);
+  tmpSvg.appendChild(tmpPath);
+  const len = tmpPath.getTotalLength();
+  const pt = tmpPath.getPointAtLength(len * 0.5);
+  document.body.removeChild(tmpSvg);
+  return { x: pt.x, y: pt.y };
+}
+
+function renderNodes() {
+  const layer = document.getElementById('nodes-layer');
+  layer.innerHTML = '';
+  Object.values(NODES).forEach(n => {
+    const div = document.createElement('div');
+    div.className = `node ${n.cat}`;
+    div.dataset.nid = n.id;
+    div.style.left = n.cx + 'px';
+    div.style.top = n.cy + 'px';
+    div.innerHTML = `
+      <div class="node-id">${n.id}</div>
+      <div class="node-icon">${n.icon}</div>
+      <div class="node-title">${n.title}</div>
+      <div class="node-sub">${n.sub}</div>`;
+    div.addEventListener('click', () => selectNode(n.id));
+    layer.appendChild(div);
+  });
+}
+
+/* ─── JOURNEY FILTER ─────────────────────── */
+function selectJourney(jid) {
+  activeJourney = jid;
+
+  // Update buttons
+  document.querySelectorAll('.jbtn').forEach(b => {
+    b.classList.toggle('active', b.dataset.jid === jid);
+  });
+
+  const j = JOURNEYS.find(x => x.id === jid);
+  const activeNodes = new Set(j.nodes);
+  const activeConns = new Set(j.conns);
+
+  // Update nodes
+  document.querySelectorAll('.node').forEach(el => {
+    const inJ = activeNodes.has(el.dataset.nid);
+    el.classList.toggle('dim', !inJ);
+    el.classList.toggle('hl', inJ);
+  });
+
+  // Update arrows
+  const svg = document.getElementById('svg-layer');
+  svg.querySelectorAll('g.conn-g').forEach(g => {
+    const inJ = activeConns.has(g.dataset.cid);
+    const path = g.querySelector('path');
+    const lbl = g.querySelector('text');
+    if (inJ) {
+      const c = CONNS.find(x => x.id === g.dataset.cid);
+      path.setAttribute('stroke', c.color);
+      path.setAttribute('stroke-width', '2.2');
+      path.setAttribute('opacity', '1');
+      if (lbl) { lbl.setAttribute('fill', c.color); lbl.setAttribute('font-size','10'); }
+      // swap marker to colored arrowhead
+      path.setAttribute('marker-end', getMarker(c.color));
+    } else {
+      path.setAttribute('stroke', '#e2e8f0');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('opacity', jid === 'all' ? '1' : '0.2');
+      path.setAttribute('marker-end', 'url(#arr)');
+      if (lbl) { lbl.setAttribute('fill', '#c8d5e3'); lbl.setAttribute('font-size','9'); }
+    }
+  });
+}
+
+function getMarker(color) {
+  const map = {
+    '#16a34a': 'url(#arr-green)',
+    '#dc2626': 'url(#arr-red)',
+    '#d97706': 'url(#arr-amber)',
+    '#ea580c': 'url(#arr-orange)',
+    '#6366f1': 'url(#arr-hi)',
+  };
+  return map[color] || 'url(#arr)';
+}
+
+/* ─── NODE DETAIL PANEL ──────────────────── */
+function selectNode(nid) {
+  const n = NODES[nid];
+  if (!n) return;
+
+  // Deselect previous
+  document.querySelectorAll('.node.sel').forEach(el => el.classList.remove('sel'));
+  document.querySelector(`.node[data-nid="${nid}"]`).classList.add('sel');
+  selectedNode = nid;
+
+  const panel = document.getElementById('dpanel');
+  const inner = document.getElementById('dinner');
+  panel.classList.add('open');
+
+  // Category label color
+  const catColors = {
+    'c-entry':'#7c3aed','c-neutral':'#0284c7','c-success':'#16a34a',
+    'c-error':'#dc2626','c-pending':'#d97706','c-agreement':'#9333ea',
+    'c-active':'#059669','c-saved':'#0284c7','c-warning':'#ea580c','c-removed':'#6b7280'
+  };
+  const catColor = catColors[n.cat] || '#6b7280';
+
+  // Category labels
+  const catLabels = {
+    'c-entry':'Точка входу','c-neutral':'Інформація','c-success':'Успіх',
+    'c-error':'Помилка','c-pending':'Очікування','c-agreement':'Угода',
+    'c-active':'Активний стан','c-saved':'Збережено','c-warning':'Попередження','c-removed':'Видалено'
+  };
+
+  const nextPills = (n.next || []).map(sid => {
+    const target = NODES[sid];
+    if (!target) return '';
+    const cc = catColors[target.cat] || '#6b7280';
+    return `<span class="next-pill" style="color:${cc};border-color:${cc}20;background:${cc}0d"
+      onclick="selectNode('${sid}')">${target.icon} ${sid}: ${target.title}</span>`;
+  }).join('');
+
+  inner.innerHTML = `
+    <div class="d-hdr">
+      <div>
+        <div class="d-id" style="background:${catColor}18;color:${catColor}">${n.id} · ${catLabels[n.cat]}</div>
+        <div class="d-name">${n.icon} ${n.title}</div>
+      </div>
+      <button class="d-close" onclick="closePanel()">✕</button>
+    </div>
+
+    <div class="d-sec">
+      <div class="d-sec-title">Коли показується</div>
+      <div class="d-text">${n.when}</div>
+    </div>
+
+    <div class="d-sec">
+      <div class="d-sec-title">Стан бота</div>
+      <span class="state-badge">${n.state}</span>
+    </div>
+
+    <div class="d-sec">
+      <div class="d-sec-title">Тригер</div>
+      <div class="d-text">${n.trigger}</div>
+    </div>
+
+    ${n.condition ? `
+    <div class="d-sec">
+      <div class="d-sec-title">Умова</div>
+      <div class="d-text">${n.condition}</div>
+    </div>` : ''}
+
+    ${n.userCan && n.userCan.length ? `
+    <div class="d-sec">
+      <div class="d-sec-title">Що може зробити користувач</div>
+      <ul class="d-list">${n.userCan.map(a=>`<li>${a}</li>`).join('')}</ul>
+    </div>` : ''}
+
+    <div class="d-sec">
+      <div class="d-sec-title">Вигляд в Telegram</div>
+      ${buildTgMock(n)}
+    </div>
+
+    ${n.biz ? `
+    <hr class="divider">
+    <div class="d-sec">
+      <div class="d-sec-title">Бізнес-логіка</div>
+      <div class="biz-logic">${n.biz}</div>
+    </div>` : ''}
+
+    ${n.errors && n.errors.length ? `
+    <div class="d-sec">
+      <div class="d-sec-title">Обробка помилок</div>
+      ${n.errors.map(e=>`<div class="err-item">${e}</div>`).join('')}
+    </div>` : ''}
+
+    ${n.repeat ? `
+    <div class="d-sec">
+      <div class="d-sec-title">Повторна логіка</div>
+      <div class="d-text">${n.repeat}</div>
+    </div>` : ''}
+
+    ${nextPills ? `
+    <hr class="divider">
+    <div class="d-sec">
+      <div class="d-sec-title">Переходи далі</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">${nextPills}</div>
+    </div>` : ''}
+  `;
+}
+
+function closePanel() {
+  document.getElementById('dpanel').classList.remove('open');
+  document.querySelectorAll('.node.sel').forEach(el => el.classList.remove('sel'));
+  selectedNode = null;
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+// Click on canvas background deselects
+document.getElementById('dcanvas').addEventListener('click', e => {
+  if (e.target === document.getElementById('dcanvas') || e.target === document.getElementById('nodes-layer')) closePanel();
+});
+
+// Init
+init();
+selectJourney('all');
+</script>
+</body>
+</html>
