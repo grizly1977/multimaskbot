@@ -30,7 +30,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ─── Diagram area ───────────────────────── */
 #dwrap{flex:1;overflow:auto;padding:20px;background:#f1f5f9}
-#dcanvas{position:relative;width:1540px;height:1320px;background:#fff;border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+#dcanvas{position:relative;width:1540px;height:1880px;background:#fff;border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
 #svg-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 
 /* ─── Section backgrounds ────────────────── */
@@ -48,6 +48,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .node-title{font-size:12px;font-weight:700;line-height:1.3}
 .node-sub{font-size:10.5px;opacity:.65;line-height:1.3}
 
+/* ─── Compound node (INT) ────────────────── */
+.node-compound{width:240px;transform:translate(-120px,-44px)}
+.node-compound:hover{transform:translate(-120px,-48px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.node-compound::before{content:'';position:absolute;inset:0;background:inherit;border:2px solid;border-color:inherit;border-radius:12px;transform:translate(5px,5px);z-index:-1;opacity:0.5}
+.node-compound::after{content:'';position:absolute;inset:0;background:inherit;border:2px solid;border-color:inherit;border-radius:12px;transform:translate(10px,10px);z-index:-2;opacity:0.25}
+.node-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;margin-top:4px;letter-spacing:.3px;width:fit-content}
+
 /* Category colours */
 .c-entry{background:#ede9fe;border-color:#7c3aed;color:#3b0764}
 .c-neutral{background:#f0f9ff;border-color:#0284c7;color:#0c4a6e}
@@ -55,9 +62,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .c-error{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
 .c-pending{background:#fef3c7;border-color:#d97706;color:#78350f}
 .c-warning{background:#fff7ed;border-color:#ea580c;color:#7c2d12}
-/* New: admin (teal) */
+.c-intake{background:#faf5ff;border-color:#9333ea;color:#3b0764}
+.c-intake .node-badge{background:rgba(147,51,234,.12);color:#7c3aed}
+.c-active{background:#d1fae5;border-color:#059669;color:#064e3b}
+.c-removed{background:#f3f4f6;border-color:#6b7280;color:#1f2937}
 .c-admin{background:#f0fdfa;border-color:#0d9488;color:#134e4a}
-/* New: external destinations (dashed gray) */
 .c-external{background:#f8fafc;border-color:#64748b;border-style:dashed;color:#475569}
 
 /* ─── Detail panel ───────────────────────── */
@@ -75,9 +84,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .d-list{list-style:none;display:flex;flex-direction:column;gap:5px}
 .d-list li{font-size:13px;color:#334155;display:flex;align-items:flex-start;gap:7px;line-height:1.55}
 .d-list li::before{content:'→';color:#94a3b8;flex-shrink:0;font-size:11px;margin-top:2px}
-.bot-msg{background:#f8fafc;border-left:3px solid #0d9488;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.7;color:#334155;white-space:pre-line}
-.state-pill{display:inline-block;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.3px;margin:2px;cursor:pointer;transition:opacity .1s}
-.state-pill:hover{opacity:.75}
 .next-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;margin:3px;cursor:pointer;border:1.5px solid;transition:all .12s}
 .next-pill:hover{opacity:.8}
 .err-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#dc2626;line-height:1.5;margin-bottom:4px}
@@ -88,6 +94,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ext-link-box{background:#f8fafc;border:1.5px dashed #64748b;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .ext-link-btn{display:inline-flex;align-items:center;gap:8px;background:#0d9488;color:#fff;text-decoration:none;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;transition:background .15s;width:fit-content}
 .ext-link-btn:hover{background:#0f766e}
+.ext-link-btn-purple{background:#7c3aed}
+.ext-link-btn-purple:hover{background:#6d28d9}
+
+/* ─── Intake accordion ───────────────────── */
+.intake-flow{display:flex;flex-direction:column;gap:5px}
+.intake-q{border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;transition:border-color .15s}
+.intake-q.open{border-color:rgba(147,51,234,.35)}
+.intake-q-hdr{display:flex;align-items:flex-start;gap:8px;padding:9px 12px;cursor:pointer;background:#fafafa;transition:background .12s;user-select:none}
+.intake-q-hdr:hover{background:#f4f0fc}
+.q-num{font-size:9px;font-weight:800;color:#9333ea;background:#f3e8ff;padding:2px 7px;border-radius:8px;flex-shrink:0;margin-top:1px;letter-spacing:.3px}
+.q-text{font-size:12px;color:#334155;flex:1;line-height:1.4}
+.q-toggle{font-size:10px;color:#94a3b8;flex-shrink:0;margin-top:2px;transition:transform .2s}
+.intake-q.open .q-toggle{transform:rotate(180deg)}
+.intake-q-body{padding:8px 12px;border-top:1px solid #f1f5f9;display:none;background:#fff}
+.intake-q.open .intake-q-body{display:block}
+.intake-btns-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.intake-btn{font-size:11px;padding:3px 10px;border-radius:8px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;white-space:nowrap}
+.intake-btn.warn{background:#fef2f2;color:#dc2626;border-color:#fecaca}
+.intake-branch{font-size:11px;color:#0284c7;background:#eff6ff;border-radius:6px;padding:5px 8px;margin-top:4px;line-height:1.5}
+.intake-type{font-size:11px;color:#94a3b8;font-style:italic}
+.intake-required-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:800;color:#dc2626;background:#fef2f2;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle;border:1px solid #fecaca}
+.body-type-chips{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.body-type-chip{font-size:11px;background:#f1f5f9;padding:3px 9px;border-radius:8px;color:#475569;border:1px solid #e2e8f0}
 
 /* ─── Legend ─────────────────────────────── */
 #legend{position:absolute;bottom:16px;left:16px;background:rgba(255,255,255,.95);backdrop-filter:blur(4px);border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);z-index:10}
@@ -100,8 +129,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tg-wrap{background:#0e1621;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.22)}
 .tg-hdr{background:#17212b;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05)}
 .tg-hdr-admin{background:#0d3330;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(13,148,136,.2)}
+.tg-hdr-group{background:#1a1f2e;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05)}
 .tg-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5b6af0,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-.5px}
 .tg-avatar-admin{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#0f766e);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tg-avatar-group{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#9333ea,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
 .tg-bot-name{font-size:13px;font-weight:700;color:#e8eaed;line-height:1.2}
 .tg-bot-name-admin{font-size:13px;font-weight:700;color:#5eead4;line-height:1.2}
 .tg-bot-sub{font-size:10px;color:#5d7e96;margin-top:1px}
@@ -118,10 +149,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tg-bubble-text{font-size:13px;color:#d8dde5;line-height:1.6;white-space:pre-line;word-break:break-word}
 .tg-bubble-time{font-size:10px;color:#5d7e96;text-align:right;margin-top:5px}
 .tg-btns{display:flex;flex-direction:column;gap:3px;margin-top:4px}
-.tg-btn-row{display:flex;gap:3px}
 .tg-btn-el{flex:1;background:#17212b;border:none;border-radius:10px;padding:9px 12px;font-size:12.5px;font-weight:500;color:#6ab3f3;cursor:default;text-align:center;font-family:inherit;line-height:1.3;border:1px solid rgba(106,179,243,.15)}
 .tg-badge{display:inline-block;background:rgba(13,148,136,.15);color:#5eead4;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:6px;letter-spacing:.3px}
 .tg-forwarded{background:rgba(13,148,136,.08);border-left:2px solid #0d9488;border-radius:0 6px 6px 0;padding:6px 10px;margin-bottom:6px;font-size:11px;color:#5eead4;font-style:italic}
+.tg-group-q{background:rgba(147,51,234,.1);border-left:2px solid #9333ea;border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:4px}
+.tg-group-q-label{font-size:9px;font-weight:800;color:#9333ea;letter-spacing:.5px;margin-bottom:3px;text-transform:uppercase}
+.tg-group-q-text{font-size:12.5px;color:#c4b5fd;line-height:1.5}
 </style>
 </head>
 <body>
@@ -132,11 +165,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <a class="hdr-link" href="user-journeys.html">← Multimasking Academy Bot</a>
     </div>
     <div>
-      <h1>Consultation Bot</h1>
-      <p>Платна консультація · 3 сценарії</p>
+      <h1>Мультимаскінг Загальний</h1>
+      <p>Консультація · Унікальна група для кожного клієнта</p>
     </div>
   </div>
-  <span id="hdr-badge">15 екранів · 3 сценарії</span>
+  <span id="hdr-badge">19 екранів · 7 сценаріїв</span>
 </div>
 
 <div id="jbar">
@@ -147,48 +180,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="dwrap">
     <div id="dcanvas">
       <svg id="svg-layer"><defs>
-        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
-        </marker>
-        <marker id="arr-hi" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#6366f1"/>
-        </marker>
-        <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#16a34a"/>
-        </marker>
-        <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#dc2626"/>
-        </marker>
-        <marker id="arr-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#d97706"/>
-        </marker>
-        <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#ea580c"/>
-        </marker>
-        <marker id="arr-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#0d9488"/>
-        </marker>
-        <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#0284c7"/>
-        </marker>
+        <marker id="arr"        markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/></marker>
+        <marker id="arr-hi"     markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6366f1"/></marker>
+        <marker id="arr-green"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#16a34a"/></marker>
+        <marker id="arr-red"    markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#dc2626"/></marker>
+        <marker id="arr-amber"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#d97706"/></marker>
+        <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ea580c"/></marker>
+        <marker id="arr-teal"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#0d9488"/></marker>
+        <marker id="arr-blue"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#0284c7"/></marker>
+        <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9333ea"/></marker>
       </defs></svg>
       <div id="nodes-layer"></div>
 
       <!-- Section: Основний Flow -->
-      <div class="sec" style="left:80px;top:40px;width:620px;height:1260px;border-color:#e2e8f0;background:transparent"></div>
+      <div class="sec" style="left:80px;top:40px;width:620px;height:1830px;border-color:#e2e8f0;background:transparent"></div>
       <div class="sec-lbl" style="left:94px;top:28px;color:#94a3b8">Основний Flow</div>
 
-      <!-- Section: Сценарій - Я проходив навчання -->
-      <div class="sec" style="left:80px;top:315px;width:220px;height:250px;border-color:#bfdbfe;background:#f0f9ff18"></div>
+      <!-- Section: Я проходив навчання -->
+      <div class="sec" style="left:80px;top:315px;width:220px;height:260px;border-color:#bfdbfe;background:#f0f9ff14"></div>
       <div class="sec-lbl" style="left:88px;top:302px;color:#0284c7">Я проходив навчання</div>
 
-      <!-- Section: Сценарій - Хочу навчання -->
-      <div class="sec" style="left:810px;top:315px;width:220px;height:250px;border-color:#fed7aa;background:#fff7ed18"></div>
+      <!-- Section: Хочу навчання -->
+      <div class="sec" style="left:810px;top:315px;width:220px;height:260px;border-color:#fed7aa;background:#fff7ed14"></div>
       <div class="sec-lbl" style="left:818px;top:302px;color:#ea580c">Хочу навчання</div>
 
-      <!-- Section: Адмін Flow -->
-      <div class="sec" style="left:1100px;top:880px;width:340px;height:280px;border-color:#99f6e4;background:#f0fdfa18"></div>
-      <div class="sec-lbl" style="left:1112px;top:868px;color:#0d9488">Адмін Flow</div>
+      <!-- Section: Group Flow -->
+      <div class="sec" style="left:80px;top:920px;width:620px;height:950px;border-color:#99f6e4;background:#f0fdfa0a"></div>
+      <div class="sec-lbl" style="left:94px;top:908px;color:#0d9488">Group Flow — унікальна група</div>
+
+      <!-- Section: Діагностика бот -->
+      <div class="sec" style="left:80px;top:1222px;width:220px;height:164px;border-color:#c4b5fd;background:#faf5ff12"></div>
+      <div class="sec-lbl" style="left:88px;top:1210px;color:#9333ea">Діагностика бот</div>
+
+      <!-- Section: Master Flow -->
+      <div class="sec" style="left:1100px;top:1390px;width:340px;height:310px;border-color:#99f6e4;background:#f0fdfa0a"></div>
+      <div class="sec-lbl" style="left:1112px;top:1378px;color:#0d9488">Master Flow</div>
 
       <div id="legend">
         <div class="leg-title">Легенда</div>
@@ -197,9 +223,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="leg-item"><div class="leg-dot" style="background:#f0f9ff;border-color:#0284c7"></div>Нейтральний</div>
           <div class="leg-item"><div class="leg-dot" style="background:#dcfce7;border-color:#16a34a"></div>Успіх</div>
           <div class="leg-item"><div class="leg-dot" style="background:#fef3c7;border-color:#d97706"></div>Очікування</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#f0fdfa;border-color:#0d9488"></div>Адмін</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#faf5ff;border-color:#9333ea"></div>Intake (група)</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#d1fae5;border-color:#059669"></div>Активна консульт.</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f0fdfa;border-color:#0d9488"></div>Адмін / Майстер</div>
           <div class="leg-item"><div class="leg-dot" style="background:#f8fafc;border-color:#64748b;border-style:dashed"></div>Зовнішній</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#fee2e2;border-color:#dc2626"></div>Помилка</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f3f4f6;border-color:#6b7280"></div>Завершено</div>
         </div>
       </div>
     </div>
@@ -215,6 +243,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
    DATA
 ═══════════════════════════════════════════ */
 const NODES = {
+
   S0: { id:'S0', title:'Entry Point', icon:'📣', cat:'c-entry', cx:560, cy:80,
     sub:'Кнопка в каналі або закріпленому пості',
     when:'Натискання кнопки в публічному Telegram-каналі або чаті',
@@ -226,10 +255,10 @@ const NODES = {
     biz:'Точки входу: закріплений пост, кнопка під постом, кнопка в описі каналу, deep link. Бот фіксує джерело входу (utm). Один і той самий бот обслуговує всі три сценарії.',
     errors:[],
     repeat:'При повторному натисканні → Main Menu (S1)',
-    tgMsg:'💆‍♀️ Хочете отримати розбір вашого кейсу?\n\nСпеціалісти Multimasking Academy дадуть відповідь на ваше конкретне питання і підберуть протокол для вашої ситуації.',
+    tgMsg:'💆‍♀️ Хочете персональний розбір вашого кейсу від засновниці методології Мультимаскінг — Ольги Русанової?\n\nНадсилайте ваше питання, прикладайте фото або відео — і я особисто дам розгорнуту відповідь та підберу рішення саме для вашої ситуації.',
     tgBtns:['💬 Отримати розбір кейсу'] },
 
-  S1: { id:'S1', title:'Main Menu', icon:'📋', cat:'c-neutral', cx:560, cy:220,
+  S1: { id:'S1', title:'Main Menu', icon:'📋', cat:'c-neutral', cx:560, cy:230,
     sub:'Головне меню — вибір сценарію',
     when:'Після запуску бота або команди /start',
     userCan:['Обрати "Консультація"','Обрати "Я проходив навчання"','Обрати "Хочу навчання"'],
@@ -237,7 +266,7 @@ const NODES = {
     state:'IN_MENU',
     trigger:'/start або повернення з будь-якого екрана',
     condition:'Завжди. Якщо є активний незавершений стан — показати відповідне повідомлення відновлення перед меню.',
-    biz:'Якщо user.state = PAYMENT_PENDING → показати нагадування про незавершену оплату. Якщо WAITING_CASE → нагадати що треба надіслати кейс. Якщо написав довільний текст замість вибору — повторити меню. Не змішувати сценарії між собою.',
+    biz:'Якщо user.state = PAYMENT_PENDING → показати нагадування про незавершену оплату. Якщо USER_IN_GROUP → нагадати про активну групу. Якщо написав довільний текст замість вибору — повторити меню.',
     errors:['Якщо довільний текст замість кнопки → повторити меню'],
     repeat:'Повторний /start → завжди повертає в Main Menu, але спочатку перевіряє активний стан',
     tgMsg:'Вітаємо! 👋\n\nЩо вас цікавить?',
@@ -251,10 +280,10 @@ const NODES = {
     state:'VIEWED_CONSULTATION',
     trigger:'Натискання кнопки "Консультація" в S1',
     condition:'Немає активної незавершеної консультації. Якщо є — показати статус існуючої.',
-    biz:'Чітко описати формат і обмеження: 1 оплата = 1 кейс. Не дозволяти відправляти текст кейсу до оплати. Якщо пише текст — пояснити що треба спочатку оплатити.',
+    biz:'Чітко описати формат: 1 оплата = 1 унікальна група = 1 консультація. Не дозволяти переходити до оплати якщо є активна незавершена. Якщо пише текст кейсу до оплати → пояснити що треба спочатку оплатити.',
     errors:['Якщо пише кейс до оплати → нагадати оплатити спочатку'],
     repeat:'При повторному відкритті — показати той самий екран',
-    tgMsg:'💬 Консультація з мультимаскінгу\n\n✅ Що входить:\n— Розбір вашого конкретного кейсу\n— Рекомендації щодо протоколу мультимаскінгу\n— Відповідь на одне головне питання\n\n📸 Формат: надсилаєте фото + опис → отримуєте розбір від спеціаліста\n\nВартість: [сума] грн',
+    tgMsg:'💬 Персональна консультація з Мультимаскінгу\n\n✅ Що входить:\n— Особистий розбір вашого кейсу від Ольги Русанової\n— Рекомендації щодо протоколу мультимаскінгу\n— Розгорнута відповідь на ваше питання\n\n📸 Формат: надсилаєте фото / відео + відповіді на питання → отримуєте детальний розбір у приватній групі\n\nВартість: 1$',
     tgBtns:['💳 Оплатити консультацію','← Назад'] },
 
   S10: { id:'S10', title:'Redirect', icon:'🎓', cat:'c-neutral', cx:170, cy:380,
@@ -265,7 +294,7 @@ const NODES = {
     state:'REDIRECTING',
     trigger:'Натискання кнопки "Я проходив навчання" в S1',
     condition:'Будь-який користувач, що проходив курс Multimasking Academy',
-    biz:'Користувач проходив навчання і хоче отримати доступ до закритої групи підписників. Перенаправляємо його до окремого бота підписки (Multimasking Academy Bot). Кнопка відкриває посилання на той бот.',
+    biz:'Перенаправляємо до окремого бота підписки (Multimasking Academy Bot). Там відбувається верифікація email Kwiga та отримання доступу до закритої групи.',
     errors:[],
     repeat:'Завжди показує цей екран до явного переходу',
     tgMsg:'🎓 Відмінно! Якщо ви вже проходили навчання в Multimasking Academy, ви можете отримати доступ до закритої групи Майстрів.\n\nДля цього скористайтеся нашим ботом доступу 👇',
@@ -279,13 +308,13 @@ const NODES = {
     state:'BROWSING_COURSE',
     trigger:'Натискання кнопки "Хочу навчання" в S1',
     condition:'Будь-який користувач, зацікавлений у навчанні',
-    biz:'Користувач ще не навчався і хоче дізнатися про курси Multimasking Academy. Надаємо посилання на лендинг або контакт менеджера. Не проводимо консультацію — це окремий продукт.',
+    biz:'Користувач ще не навчався і хоче дізнатися про методологію Мультимаскінг (авторська техніка косметичного обгортання) та курси Multimasking Academy. Надаємо посилання на лендинг або контакт менеджера.',
     errors:[],
     repeat:'Завжди показує цей екран до явного переходу',
-    tgMsg:'📚 Хочете стати спеціалістом з мультимаскінгу?\n\nMultimasking Academy — авторський курс, що навчає роботі з масками нового покоління.\n\nДізнайтеся більше та запишіться на навчання 👇',
+    tgMsg:'📚 Хочете опанувати методологію Мультимаскінг?\n\nМультимаскінг — авторська косметична методологія обгортання, що поєднує активні маски для комплексного та одночасного впливу на різні зони шкіри. Метод розроблений Ольгою Русановою.\n\nДізнайтеся більше про навчання та запишіться на курс 👇',
     tgBtns:['🌐 Дізнатися про навчання','← Назад'] },
 
-  S3: { id:'S3', title:'Payment Screen', icon:'🔗', cat:'c-pending', cx:560, cy:520,
+  S3: { id:'S3', title:'Payment Screen', icon:'🔗', cat:'c-pending', cx:560, cy:530,
     sub:'Створення платежу та перехід до оплати',
     when:'Натиснуто "Оплатити консультацію"',
     userCan:['Оплатити на зовнішній платіжній сторінці'],
@@ -295,116 +324,191 @@ const NODES = {
     condition:'Немає активного PAYMENT_PENDING. Якщо є — запитати: "У вас є незавершена оплата. Продовжити?"',
     biz:'1. Створити payment session. 2. Зберегти: payment_id, user_id, consultation_pre_id, provider, amount, currency. 3. Відправити сервісне повідомлення з посиланням. 4. Зафіксувати стан PAYMENT_PENDING. 5. Очікувати webhook.',
     errors:['Не вдалося створити payment session → показати помилку + retry','Немає payment URL → логувати + помилка'],
-    repeat:'Повторна спроба оплати → переперевірити наявний pending або створити новий',
-    tgMsg:'🔗 Відкриваємо сторінку оплати.\n\nПісля підтвердження оплати ми запросимо вас описати ваш кейс.',
+    repeat:'Повторна спроба → переперевірити наявний pending або створити новий',
+    tgMsg:'🔗 Відкриваємо сторінку оплати.\n\nПісля підтвердження ми створимо вашу персональну консультаційну групу.',
     tgBtns:[],
-    tgNote:'Посилання на оплату відкривається в зовнішній системі (WayForPay / Stripe / LiqPay). Кнопок немає — користувач переходить на зовнішню сторінку.' },
+    tgNote:'Посилання на оплату відкривається в зовнішній системі (WayForPay / Stripe / LiqPay).' },
 
-  S4: { id:'S4', title:'Payment Pending', icon:'⏳', cat:'c-pending', cx:560, cy:660,
+  S4: { id:'S4', title:'Payment Pending', icon:'⏳', cat:'c-pending', cx:560, cy:680,
     sub:'Очікування підтвердження оплати',
     when:'Після переходу до оплати, до отримання webhook',
-    userCan:['Натиснути "Перевірити оплату"','Натиснути "Оплатити ще раз"','Натиснути "← Назад" (тільки якщо оплати ще не було)'],
+    userCan:['Натиснути "Перевірити оплату"','Натиснути "Оплатити ще раз"','Натиснути "← Назад"'],
     next:['S5','S3'],
     state:'PAYMENT_PENDING',
     trigger:'Створено payment session, очікується webhook',
     condition:'payment.status = pending',
-    biz:'webhook success → S5. webhook failed → показати помилку + retry. Перевірити оплату → запит до payment status API. "Назад" доступний тільки якщо оплата ще не почалась. Edge cases: duplicate webhook → ігнорувати + логувати. Таймаут без оплати → нагадування.',
-    errors:['Webhook failed → показати помилку, кнопка "Спробувати ще раз"','Duplicate webhook → ігнорувати, логувати як duplicate','Webhook timeout → залишити в PAYMENT_PENDING'],
+    biz:'webhook success → S5 (Group Creating). webhook failed → показати помилку + retry. Перевірити оплату → запит до payment status API. Edge cases: duplicate webhook → ігнорувати + логувати.',
+    errors:['Webhook failed → показати помилку, кнопка "Спробувати ще раз"','Duplicate webhook → ігнорувати, логувати як duplicate'],
     repeat:'Повторний /start при PAYMENT_PENDING → показати цей екран',
     tgMsg:'⏳ Очікуємо підтвердження оплати.\n\nЯкщо сторінку оплати було закрито або виникла помилка — спробуйте ще раз.',
     tgBtns:['🔄 Перевірити оплату','💳 Оплатити ще раз','← Назад'] },
 
-  S5: { id:'S5', title:'Payment Success', icon:'🎉', cat:'c-success', cx:560, cy:800,
-    sub:'Оплата підтверджена — надіслати кейс',
+  S5: { id:'S5', title:'Payment Success', icon:'🎉', cat:'c-success', cx:560, cy:830,
+    sub:'Оплата підтверджена — створюємо групу',
     when:'Webhook success отримано',
-    userCan:['Надіслати кейс текстом','Надіслати фото + текст'],
-    next:['S6'],
-    state:'WAITING_CASE',
+    userCan:['Натиснути "Перейти до консультації"'],
+    next:['G1'],
+    state:'GROUP_CREATING',
     trigger:'Webhook від платіжної системи зі статусом success',
     condition:'payment.status = success, webhook не дублюється',
-    biz:'1. payment.status = PAID. 2. user.state = WAITING_CASE. 3. Створити право на відправку одного кейсу. 4. Idempotent: якщо success вже оброблявся — не відправляти повторно. 5. Бот сам надсилає повідомлення після webhook, навіть якщо користувач не повернувся.',
-    errors:['Webhook невалідний → не відкривати доступ, логувати','Не вдалося активувати → логувати + повідомити + підтримка'],
-    repeat:'Повторний /start при WAITING_CASE → "Ви оплатили консультацію. Опишіть ваш кейс тут."',
-    tgMsg:'✅ Оплату підтверджено!\n\nТепер надішліть ваш кейс:\n— Опишіть ситуацію з клієнтом\n— Прикріпіть фото (за потреби)\n— Вкажіть одне головне питання\n\nЧекаємо ваше повідомлення 👇',
+    biz:'1. Верифікувати платіж. 2. Створити запис консультації. 3. Призначити унікальну групу з пулу (MVP). 4. Згенерувати user_invite_link та master_invite_link. 5. Зберегти: consultation_id, group_id, user_invite_link, master_invite_link, status. 6. Відправити invite link користувачу.',
+    errors:['Не вдалося призначити групу → повідомити адміна + показати помилку користувачу','Webhook невалідний → не відкривати доступ, логувати'],
+    repeat:'Повторний /start при GROUP_CREATING → повторно відправити invite link',
+    tgMsg:'Оплата пройшла успішно ✅\n\nМи створили для вас окрему групу для консультації.\nПерейдіть за посиланням нижче, щоб продовжити.',
+    tgBtns:['👥 Перейти до консультації'] },
+
+  G1: { id:'G1', title:'Group Created', icon:'🏠', cat:'c-success', cx:560, cy:980,
+    sub:'Унікальна група призначена — invite link відправлено',
+    when:'Після підтвердження оплати (S5)',
+    userCan:['Перейти за invite link до групи'],
+    next:['G2'],
+    state:'GROUP_READY',
+    trigger:'S5: payment verified → group assigned from pool',
+    condition:'group.status = available у пулі pre-created груп',
+    biz:'MVP: пул pre-created груп. Назва групи: "MULTIMASKING Consultation #<id>". DB: зберегти consultation_id, group_id, user_invite_link, master_invite_link, status=assigned. Якщо пул порожній → сповістити адміна + показати користувачу затримку. Правило: 1 payment = 1 group, без reuse.',
+    errors:['Пул порожній → сповістити адміна, повідомити користувача про затримку','Invite link не згенеровано → retry 3 рази, потім підтримка'],
+    repeat:'При повторному /start → повторно надіслати той самий invite link',
+    tgMsg:'🏠 Ваша персональна група для консультації готова!\n\nПерейдіть за посиланням — там ми поставимо кілька запитань, щоб підготувати точну відповідь від Ольги.',
+    tgBtns:['👥 Перейти до групи'] },
+
+  G2: { id:'G2', title:'User Joins Group', icon:'👥', cat:'c-neutral', cx:560, cy:1130,
+    sub:'Користувач приєднався до групи — анкетування починається',
+    when:'Бот отримує подію new_chat_member для даного user_id',
+    userCan:['Очікувати першого питання від бота'],
+    next:['INT'],
+    state:'INTAKE_STARTING',
+    trigger:'Telegram webhook: new_chat_member event у consultation group',
+    condition:'user_id відповідає consultation.user_id для цієї групи',
+    biz:'Бот обробляє подію входу користувача. Верифікує user_id. Запускає intake state machine → Q1. Якщо приєднався не той user_id → kick + повідомлення. Якщо не приєднався протягом 24 год → нагадування в боті.',
+    errors:['Невірний user_id → kick + "Ця група призначена для іншого користувача"','Не приєднався 24год → нагадування з repeat invite link'],
+    repeat:'При повторному вході → перевірити стан intake і продовжити з поточного питання',
+    tgMsg:'Вітаємо у вашій персональній консультаційній групі! 👋\n\nЩоб Ольга могла підготувати точну відповідь — поставимо кілька коротких запитань.\n\nПочнемо?',
+    tgBtns:['✅ Почати'],
+    isGroup: true },
+
+  INT: { id:'INT', title:'Intake Questions', icon:'📋', cat:'c-intake', cx:560, cy:1290,
+    isCompound: true,
+    sub:'Q1–Q11 · Анкетування в групі · один крок за раз',
+    when:'Після входу користувача в групу (G2)',
+    userCan:['Відповідати на питання послідовно','Надсилати фото/відео на Q5','Пройти body_type_bot якщо Q1 = Ні'],
+    next:['GI','EDIAG'],
+    state:'INTAKE_IN_PROGRESS',
+    trigger:'G2: user joined → bot sends Q1',
+    condition:'consultation.status = INTAKE_IN_PROGRESS',
+    biz:'Бот ставить по одному питанню (state machine). Зберігає відповідь → переходить до наступного. Неправильний формат → повторити питання. Q5 (фото/відео) обов\'язковий — без нього прогрес заблокований. Після Q11 → GI.',
+    errors:['Q5: відсутнє фото/відео → блокувати прогрес, повторити запит','Неправильний формат → повторити поточне питання','Сторонні повідомлення → ігнорувати + нагадати поточне питання'],
+    repeat:'При перезапуску → відновити з поточного питання (не починати заново)',
+    questions: [
+      { num:'Q1', text:'Чи проходили ви бот-діагностику MULTIMASKING?', type:'buttons', btns:['Так','Ні'], branch:'Якщо "Ні" → редірект на t.me/body_type_bot → після завершення повернення до Q2' },
+      { num:'Q2', text:'Який тип вам визначив бот?\n(або прикріпіть скрін результату)', type:'text_or_photo' },
+      { num:'Q3', text:'Що вас турбує зараз?', type:'text' },
+      { num:'Q4', text:'Що ви вже пробували?', type:'text' },
+      { num:'Q5', text:'Прикріпіть фото або відео', type:'photo_video', required:true },
+      { num:'Q6', text:'Чи є набряки?', type:'text' },
+      { num:'Q7', text:'Чи є відчуття "м\'якого / твердого / желейного тіла"?', type:'text' },
+      { num:'Q8', text:'Чи легко набираєте вагу?', type:'text' },
+      { num:'Q9', text:'Чи важко її скинути?', type:'text' },
+      { num:'Q10', text:'Чи було гірше після процедур?', type:'text' },
+      { num:'Q11', text:'Чи готові змінювати підхід?', type:'text' },
+    ],
+    tgMsg:'',
+    tgBtns:[] },
+
+  EDIAG: { id:'EDIAG', title:'body_type_bot', icon:'🔬', cat:'c-external', cx:170, cy:1290,
+    sub:'Діагностика типу тіла — 13 питань',
+    when:'Q1 = "Ні" (користувач не проходив діагностику)',
+    userCan:['Пройти 13-крокову діагностику (A–E відповіді)','Дізнатись тип тіла','Повернутись до групи і відповісти на Q2'],
+    next:['INT'],
+    state:'EXTERNAL',
+    trigger:'Q1 = Ні → посилання t.me/body_type_bot?start=from_consultation_group_{id}',
+    condition:'Зовнішній бот — поза цією групою',
+    biz:'Зовнішній бот діагностики типу тіла MULTIMASKING. 13 питань (A–E варіанти) про: стан шкіри, сон, травлення, настрій, волосся/нігті, ССС, ШКТ, загальні відчуття. Результат → один з 5 типів. Після завершення → користувач сам повертається до групи і відповідає на Q2 з результатом.',
+    errors:['Не повернувся після діагностики → нагадування через 1 годину'],
+    repeat:'Якщо вже проходив → Q1 = Так, EDIAG пропускається',
+    tgMsg:'',
     tgBtns:[],
-    tgNote:'Бот переходить у стан WAITING_CASE і очікує повідомлення від користувача. Кнопок немає — користувач пише сам.' },
+    extLink:'https://t.me/body_type_bot',
+    extLabel:'Відкрити body_type_bot →',
+    isExternal: true,
+    isBodyTypeBot: true },
 
-  S6: { id:'S6', title:'Case Input', icon:'📝', cat:'c-neutral', cx:560, cy:940,
-    sub:'Приймання кейсу від користувача',
-    when:'Після підтвердження оплати, user.state = WAITING_CASE',
-    userCan:['Надіслати текст + фото','Надіслати тільки текст','Надіслати тільки фото (буде прохання додати текст)'],
-    next:['S7','A1'],
-    state:'CASE_SUBMITTED',
-    trigger:'Користувач надіслав повідомлення при стані WAITING_CASE',
-    condition:'user.state = WAITING_CASE',
-    biz:'Приймати: текст, фото + текст, дозволені документи. Тільки фото → попросити додати питання. Після прийняття: створити consultation_id, зберегти текст + file_id, відправити в Consultations Hub, показати підтвердження. Якщо Hub недоступний → логувати + повідомити адміна про помилку.',
-    errors:['Тільки фото без тексту → "Фото отримали. Додайте, будь ласка, ваше питання текстом."','Hub недоступний → "Запит отримано, але виникла технічна помилка. Адміністратора повідомлено."'],
-    repeat:'Якщо пише ще після відправки кейсу → "Ваш запит вже передано спеціалісту. Дочекайтесь відповіді."',
-    tgUserMsg:'Клієнт після гель-лаку має пожовтіння нігтьової пластини. Фото додаю. Питання: який протокол мультимаскінгу підійде для відновлення?',
-    tgMsg:'✅ Дякуємо! Ваш запит отримано.\n\nКейс передано спеціалісту. Очікуйте відповідь — ми повідомимо вас тут.',
-    tgBtns:[] },
+  GI: { id:'GI', title:'Intake Complete', icon:'✅', cat:'c-success', cx:560, cy:1460,
+    sub:'Всі питання анкети отримані — майстер повідомлений',
+    when:'Після відповіді на Q11',
+    userCan:['Очікувати підключення майстра'],
+    next:['GC','M1'],
+    state:'WAITING_MASTER',
+    trigger:'Відповідь на Q11 отримана, всі поля заповнені',
+    condition:'intake.q1–q11 = all answered, q5 = photo/video present',
+    biz:'1. Зберегти всі відповіді в answers_json. 2. consultation.status = WAITING_MASTER. 3. Відправити майстру сповіщення з summary (→ M1). 4. Відправити користувачу підтвердження. 5. Бот готує summary відповідей для майстра.',
+    errors:['Q5 не заповнено → не переходити до GI, повернути до Q5'],
+    repeat:'Після GI стан незмінний до підключення майстра',
+    tgMsg:'Дякуємо, ви відповіли на всі питання ✅\n\nМайстер скоро підключиться.\nЯк тільки Ольга з\'явиться в групі — ваша консультація розпочнеться.',
+    tgBtns:[],
+    isGroup: true },
 
-  S7: { id:'S7', title:'Case Submitted', icon:'📨', cat:'c-pending', cx:560, cy:1090,
-    sub:'Кейс у роботі — очікування відповіді',
-    when:'Кейс відправлено в Consultations Hub, очікується відповідь адміна',
-    userCan:['Чекати відповідь','Написати ще (отримає пояснення що кейс вже в роботі)'],
-    next:['S8'],
-    state:'WAITING_ADMIN_REPLY',
-    trigger:'Кейс успішно пересланий в Consultations Hub',
-    condition:'consultation.status = WAITING_ADMIN_REPLY',
-    biz:'Стан очікування. Якщо користувач пише ще → відповідати: "Ваш запит вже передано спеціалісту. Дочекайтесь відповіді." Перехід до S8 відбувається автоматично після відповіді адміна в Hub через reply.',
-    errors:['Якщо пише додаткові повідомлення → автовідповідь без збереження'],
-    repeat:'Повторний /start при WAITING_ADMIN_REPLY → "Ваш запит вже в роботі. Очікуйте відповідь."',
-    tgMsg:'⏳ Ваш запит вже в роботі.\n\nЯк тільки спеціаліст дасть відповідь — ми одразу надішлемо вам повідомлення.',
-    tgBtns:[] },
+  M1: { id:'M1', title:'Master Notification', icon:'🔔', cat:'c-admin', cx:1230, cy:1460,
+    sub:'Ольга отримує сповіщення + summary + посилання в групу',
+    when:'Після завершення анкети (GI)',
+    userCan:['(майстер) Переглянути summary відповідей','(майстер) Перейти в групу за invite link'],
+    next:['M2'],
+    state:'MASTER_NOTIFIED',
+    trigger:'GI: all intake questions answered',
+    condition:'consultation.status = WAITING_MASTER',
+    biz:'Система відправляє майстру (Ользі) сповіщення з: consultation_id, summary відповідей Q1–Q11, master_invite_link. Майстер переглядає анкету до входу в групу. Якщо не відреагував через [X] год → автонагадування.',
+    errors:['master_invite_link прострочений → регенерувати','Не підключився [X] год → автонагадування'],
+    repeat:'Повторне сповіщення якщо майстер не відреагував',
+    tgMsg:'',
+    tgBtns:[],
+    tgHubMsg:'🔔 Нова консультація #C-2024-047\n\nВід: @username · 14:31\nСтатус: ⏳ Очікує підключення\n\n─────────────────\nТип: Щитоподібний\nТурбує: набряки після обгортання\nПробувала: стандартні протоколи\nФото: ✅ прикріплено\n─────────────────',
+    isAdmin: true },
 
-  S8: { id:'S8', title:'Reply Delivered', icon:'💬', cat:'c-success', cx:560, cy:1230,
-    sub:'Відповідь спеціаліста доставлена',
-    when:'Адмін відповів через reply в Consultations Hub',
-    userCan:['Прочитати відповідь','Отримати нову консультацію'],
+  M2: { id:'M2', title:'Master Joins', icon:'👩‍💼', cat:'c-admin', cx:1230, cy:1600,
+    sub:'Ольга Русанова підключилась до групи',
+    when:'Майстер перейшов за master_invite_link',
+    userCan:['(майстер) Переглянути відповіді анкети','(майстер) Спілкуватись у групі','(майстер) Написати /finish після завершення'],
+    next:['GC'],
+    state:'MASTER_IN_GROUP',
+    trigger:'Telegram webhook: new_chat_member = master_user_id',
+    condition:'master_invite_link використано, master_user_id = підтверджений ID майстра',
+    biz:'Бот виявляє вхід майстра → відправляє summary анкети у групу → consultation.status = ACTIVE. Якщо майстер зайшов до завершення анкети → попередження в групі. Неправильний user_id за master_invite → видалити.',
+    errors:['Майстер зайшов до завершення анкети → "⚠️ Анкета ще не завершена"','Невірний user_id → kick'],
+    repeat:'Вийшов і знову зайшов → продовжити консультацію',
+    tgMsg:'',
+    tgBtns:[],
+    tgHubMsg:'✅ Майстер підключився\n\nКонсультація #C-2024-047 активна\nОльга в групі · 15:02',
+    isAdmin: true },
+
+  GC: { id:'GC', title:'Consultation Live', icon:'💬', cat:'c-active', cx:560, cy:1610,
+    sub:'Жива консультація — майстер і клієнт у групі',
+    when:'Майстер (M2) підключився до групи',
+    userCan:['Спілкуватись з майстром напряму','Надсилати фото та відео','Ставити уточнюючі питання'],
+    next:['GF'],
+    state:'CONSULTATION_ACTIVE',
+    trigger:'M2: master_user_id joined → бот відправляє summary анкети в групу',
+    condition:'consultation.status = ACTIVE, обидва учасники в групі',
+    biz:'Бот надсилає структурований summary відповідей у групу для майстра. Далі — пряме спілкування без посередника (бот не проксує). Після завершення майстер пише /finish.',
+    errors:['Один з учасників вийшов → нагадування повернутись'],
+    repeat:'Консультація триває до /finish',
+    tgMsg:'Ольга підключилась до вашої групи 👩‍💼\n\nКонсультація розпочалась! Можете спілкуватись напряму.',
+    tgBtns:[],
+    isGroup: true },
+
+  GF: { id:'GF', title:'Group Closed', icon:'🔒', cat:'c-removed', cx:560, cy:1770,
+    sub:'Консультація завершена — група в режимі читання',
+    when:'Майстер написав /finish',
+    userCan:['Переглянути архів консультації','Розпочати нову консультацію'],
     next:['S2'],
     state:'COMPLETED',
-    trigger:'Адмін зробив reply на повідомлення консультації в Hub',
-    condition:"consultation.status = WAITING_ADMIN_REPLY, reply пов'язаний з consultation_id",
-    biz:'1. Знайти user_id по consultation_id. 2. Відправити відповідь користувачу. 3. consultation.status = COMPLETED. 4. user.state = COMPLETED. 5. Повідомити Hub що відповідь доставлена. Якщо user заблокував бота → delivery_failed + повідомити адміна.',
-    errors:['Користувач заблокував бота → delivery_failed, повідомити адміна в Hub','Не вдалося доставити → retry 3 рази, потім delivery_failed'],
-    repeat:'Після COMPLETED → кнопка "Нова консультація" веде до S2',
-    tgMsg:'💬 Відповідь спеціаліста:\n\n[Текст відповіді адміна]\n\n─────────────────\n\nДякуємо за звернення до Multimasking Academy! 💆‍♀️',
+    trigger:'/finish від майстра (master_user_id) у групі',
+    condition:'consultation.status = ACTIVE',
+    biz:'1. Група переводиться в read-only (прибираємо права писати для всіх крім бота). 2. consultation.status = COMPLETED. 3. Зберегти посилання на архів. 4. Відправити користувачу підсумкове повідомлення в бот. 5. Звільнити групу (не reuse — архів). Правило: 1 payment = 1 group, groups не повторюються.',
+    errors:['Бот не має прав змінити права групи → повідомити адміна'],
+    repeat:'COMPLETED — незмінний. Нова консультація = новий payment + нова група',
+    tgMsg:'Консультацію завершено 🔒\n\nДякуємо! Архів вашої консультації залишається в групі.\n\nХочете ще одну консультацію?',
     tgBtns:['💬 Нова консультація'] },
 
-  A1: { id:'A1', title:'Consultations Hub', icon:'🔐', cat:'c-admin', cx:1230, cy:940,
-    sub:'Адмін отримує кейс у Hub',
-    when:'Кейс надіслано від S6',
-    userCan:['(адмін) Переглянути кейс','(адмін) Відповісти через reply'],
-    next:['A2'],
-    state:'HUB_RECEIVED',
-    trigger:'Бот пересилає кейс до Consultations Hub при отриманні',
-    condition:'consultation.status = WAITING_ADMIN_REPLY',
-    biz:'Бот пересилає кейс у спеціальний чат (Consultations Hub) з метаданими: user_id, consultation_id, username, час надходження. Повідомлення у Hub прив\'язується до consultation_id через message_id. Адмін відповідає через reply → A2.',
-    errors:['Hub недоступний → логувати помилку, повідомити адміна через fallback channel'],
-    repeat:'Кожен кейс — окреме повідомлення у Hub',
-    tgMsg:'',
-    tgBtns:[],
-    tgHubMsg:'📝 Новий кейс #C-2024-047\n\nВід: @username · 14:31\nСтатус: ⏳ Очікує відповіді\n\n─────────────────\nКлієнт після гель-лаку має пожовтіння нігтьової пластини. Фото додаю. Питання: який протокол мультимаскінгу підійде для відновлення?\n─────────────────',
-    isAdmin: true },
-
-  A2: { id:'A2', title:'Admin Reply', icon:'✍️', cat:'c-admin', cx:1230, cy:1090,
-    sub:'Адмін відповідає через reply у Hub',
-    when:'Адмін робить reply на повідомлення кейсу в Hub',
-    userCan:['(адмін) Написати відповідь через reply','(адмін) Прикріпити фото або матеріали'],
-    next:['S8'],
-    state:'ADMIN_REPLIED',
-    trigger:'Reply від адміна на повідомлення з consultation_id',
-    condition:'message.reply_to_message_id відповідає consultation_id',
-    biz:'Бот відстежує reply-повідомлення у Hub. Якщо reply_to = повідомлення кейсу → витягти consultation_id → знайти user_id → відправити відповідь користувачу → S8. Підтримка фото, тексту, документів. Після доставки → оновити статус у Hub.',
-    errors:['Reply не розпізнано як консультація → не відправляти нічого','Помилка доставки → повідомити адміна в Hub'],
-    repeat:'Один reply = одна доставка. Повторний reply → нове повідомлення користувачу',
-    tgMsg:'',
-    tgBtns:[],
-    tgHubMsg:'✅ Відповідь доставлена\n\nКейс #C-2024-047 · @username\n\nВідповідь надіслано о 15:02',
-    isAdmin: true },
-
-  EXT1: { id:'EXT1', title:'Multimasking Academy Bot', icon:'🔗', cat:'c-external', cx:170, cy:520,
+  EXT1: { id:'EXT1', title:'Multimasking Academy Bot', icon:'🔗', cat:'c-external', cx:170, cy:530,
     sub:'Бот підписки та доступу до групи',
     when:'Перехід з S10 — редірект до бота доступу',
     userCan:['Відкрити бота доступу до групи'],
@@ -412,7 +516,7 @@ const NODES = {
     state:'EXTERNAL',
     trigger:'Кнопка "Перейти до бота доступу" у S10',
     condition:'Зовнішній ресурс — поза цим ботом',
-    biz:'Зовнішній бот для управління підпискою та доступом до закритої групи Майстрів. Обробляє: верифікацію email Kwiga, оплату підписки 1 грн/місяць, надання invite link до групи, управління renewal. Окрема архітектура описана у user-journeys.html.',
+    biz:'Зовнішній бот для управління підпискою та доступом до закритої групи Майстрів. Обробляє: верифікацію email Kwiga, оплату підписки 1 грн/місяць, надання invite link до групи, управління renewal.',
     errors:[],
     repeat:'Зовнішній ресурс — без стану в цьому боті',
     tgMsg:'',
@@ -421,7 +525,7 @@ const NODES = {
     extLabel:'Відкрити архітектуру бота доступу →',
     isExternal: true },
 
-  EXT2: { id:'EXT2', title:'Лендинг / Менеджер', icon:'🌐', cat:'c-external', cx:950, cy:520,
+  EXT2: { id:'EXT2', title:'Лендинг / Менеджер', icon:'🌐', cat:'c-external', cx:950, cy:530,
     sub:'Сайт або контакт менеджера для запису',
     when:'Перехід з S20 — інформація про навчання',
     userCan:['Перейти на лендинг','Написати менеджеру'],
@@ -429,80 +533,104 @@ const NODES = {
     state:'EXTERNAL',
     trigger:'Кнопка "Дізнатися про навчання" у S20',
     condition:'Зовнішній ресурс — поза цим ботом',
-    biz:'Зовнішній ресурс (лендинг або Telegram-менеджер) де потенційний студент може дізнатись про курс Multimasking Academy, умови навчання та записатись. Поза зоною відповідальності цього бота.',
+    biz:'Зовнішній ресурс де потенційний студент дізнається про курс Multimasking Academy (методологія косметичного обгортання) та записується. Поза зоною відповідальності цього бота.',
     errors:[],
     repeat:'Зовнішній ресурс — без стану в цьому боті',
     tgMsg:'',
     tgBtns:[],
+    extLink:'https://multimasking.kwiga.com/',
+    extLabel:'Перейти на сайт навчання →',
     isExternal: true },
 };
 
 /* ─── CONNECTIONS ────────────────────────── */
 const CONNS = [
-  { id:'S0-S1',    from:'S0',  to:'S1',   label:'',                path:'M 560 116 L 560 184',                                     color:'#94a3b8' },
-  { id:'S1-S2',    from:'S1',  to:'S2',   label:'консультація',    path:'M 560 256 L 560 344',                                     color:'#6366f1' },
-  { id:'S1-S10',   from:'S1',  to:'S10',  label:'я проходив',      path:'M 530 230 C 340 230 170 300 170 344',                     color:'#0284c7' },
-  { id:'S1-S20',   from:'S1',  to:'S20',  label:'хочу навчання',   path:'M 590 230 C 780 230 950 300 950 344',                     color:'#ea580c' },
-  { id:'S2-S3',    from:'S2',  to:'S3',   label:'',                path:'M 560 416 L 560 484',                                     color:'#94a3b8' },
-  { id:'S2-S1',    from:'S2',  to:'S1',   label:'назад',           path:'M 470 380 C 390 380 390 220 470 220',                     color:'#94a3b8', dashed:true },
-  { id:'S3-S4',    from:'S3',  to:'S4',   label:'',                path:'M 560 556 L 560 624',                                     color:'#d97706' },
-  { id:'S4-S5',    from:'S4',  to:'S5',   label:'success',         path:'M 560 696 L 560 764',                                     color:'#16a34a' },
-  { id:'S4-S3',    from:'S4',  to:'S3',   label:'повторити',       path:'M 470 660 C 390 660 390 520 470 520',                     color:'#dc2626', dashed:true },
-  { id:'S5-S6',    from:'S5',  to:'S6',   label:'',                path:'M 560 836 L 560 904',                                     color:'#94a3b8' },
-  { id:'S6-S7',    from:'S6',  to:'S7',   label:'',                path:'M 560 976 L 560 1054',                                    color:'#94a3b8' },
-  { id:'S6-A1',    from:'S6',  to:'A1',   label:'→ Hub',           path:'M 650 940 C 900 940 1140 940 1140 940',                   color:'#0d9488' },
-  { id:'A1-A2',    from:'A1',  to:'A2',   label:'',                path:'M 1230 976 L 1230 1054',                                  color:'#0d9488' },
-  { id:'A2-S8',    from:'A2',  to:'S8',   label:'reply → user',   path:'M 1140 1090 C 900 1090 700 1194 650 1194',                color:'#0d9488' },
-  { id:'S7-S8',    from:'S7',  to:'S8',   label:'',                path:'M 560 1126 L 560 1194',                                   color:'#94a3b8' },
-  { id:'S10-EXT1', from:'S10', to:'EXT1', label:'',                path:'M 170 416 L 170 484',                                     color:'#0284c7' },
-  { id:'S20-EXT2', from:'S20', to:'EXT2', label:'',                path:'M 950 416 L 950 484',                                     color:'#ea580c' },
-  { id:'S10-S1',   from:'S10', to:'S1',   label:'назад',           path:'M 80 380 C 20 380 20 220 470 220',                        color:'#94a3b8', dashed:true },
-  { id:'S20-S1',   from:'S20', to:'S1',   label:'назад',           path:'M 1040 380 C 1110 380 1110 220 650 220',                  color:'#94a3b8', dashed:true },
-  { id:'S8-S2',    from:'S8',  to:'S2',   label:'нова консультація', path:'M 470 1230 C 300 1230 300 380 470 380',                color:'#6366f1', dashed:true },
+  // ── Pre-payment flow ──
+  { id:'S0-S1',    from:'S0',  to:'S1',   label:'',              path:'M 560 116 L 560 194',                                   color:'#94a3b8' },
+  { id:'S1-S2',    from:'S1',  to:'S2',   label:'консультація',  path:'M 560 266 L 560 344',                                   color:'#6366f1' },
+  { id:'S1-S10',   from:'S1',  to:'S10',  label:'я проходив',    path:'M 530 240 C 340 240 170 310 170 344',                   color:'#0284c7' },
+  { id:'S1-S20',   from:'S1',  to:'S20',  label:'хочу навчання', path:'M 590 240 C 780 240 950 310 950 344',                   color:'#ea580c' },
+  { id:'S2-S3',    from:'S2',  to:'S3',   label:'',              path:'M 560 416 L 560 494',                                   color:'#94a3b8' },
+  { id:'S2-S1',    from:'S2',  to:'S1',   label:'назад',         path:'M 470 380 C 390 380 390 230 470 230',                   color:'#94a3b8', dashed:true },
+  { id:'S3-S4',    from:'S3',  to:'S4',   label:'',              path:'M 560 566 L 560 644',                                   color:'#d97706' },
+  { id:'S4-S5',    from:'S4',  to:'S5',   label:'success',       path:'M 560 716 L 560 794',                                   color:'#16a34a' },
+  { id:'S4-S3',    from:'S4',  to:'S3',   label:'повторити',     path:'M 470 680 C 390 680 390 530 470 530',                   color:'#dc2626', dashed:true },
+  // ── Side branches ──
+  { id:'S10-EXT1', from:'S10', to:'EXT1', label:'',              path:'M 170 416 L 170 494',                                   color:'#0284c7' },
+  { id:'S20-EXT2', from:'S20', to:'EXT2', label:'',              path:'M 950 416 L 950 494',                                   color:'#ea580c' },
+  { id:'S10-S1',   from:'S10', to:'S1',   label:'назад',         path:'M 80 380 C 20 380 20 230 470 230',                      color:'#94a3b8', dashed:true },
+  { id:'S20-S1',   from:'S20', to:'S1',   label:'назад',         path:'M 1040 380 C 1110 380 1110 230 650 230',                color:'#94a3b8', dashed:true },
+  // ── Group flow ──
+  { id:'S5-G1',    from:'S5',  to:'G1',   label:'',              path:'M 560 866 L 560 944',                                   color:'#94a3b8' },
+  { id:'G1-G2',    from:'G1',  to:'G2',   label:'',              path:'M 560 1016 L 560 1094',                                  color:'#94a3b8' },
+  { id:'G2-INT',   from:'G2',  to:'INT',  label:'',              path:'M 560 1166 L 560 1246',                                  color:'#9333ea' },
+  { id:'INT-GI',   from:'INT', to:'GI',   label:'Q11 ✓',         path:'M 560 1334 L 560 1424',                                  color:'#9333ea' },
+  { id:'INT-EDIAG',from:'INT', to:'EDIAG',label:'Q1 = Ні',       path:'M 440 1290 L 262 1290',                                  color:'#dc2626' },
+  { id:'EDIAG-INT',from:'EDIAG',to:'INT', label:'повернення',    path:'M 80 1290 C 20 1340 20 1380 440 1334',                  color:'#0284c7', dashed:true },
+  // ── Consultation ──
+  { id:'GI-GC',    from:'GI',  to:'GC',   label:'',              path:'M 560 1496 L 560 1574',                                  color:'#94a3b8' },
+  { id:'GI-M1',    from:'GI',  to:'M1',   label:'→ майстру',     path:'M 650 1460 L 1140 1460',                                 color:'#0d9488' },
+  { id:'M1-M2',    from:'M1',  to:'M2',   label:'',              path:'M 1230 1496 L 1230 1564',                                color:'#0d9488' },
+  { id:'M2-GC',    from:'M2',  to:'GC',   label:'приєднався',    path:'M 1140 1600 C 900 1600 700 1610 652 1610',               color:'#0d9488' },
+  { id:'GC-GF',    from:'GC',  to:'GF',   label:'/finish',       path:'M 560 1646 L 560 1734',                                  color:'#6b7280' },
+  { id:'GF-S2',    from:'GF',  to:'S2',   label:'нова консульт.', path:'M 470 1770 C 300 1770 300 380 470 380',                 color:'#6366f1', dashed:true },
 ];
 
 /* ─── JOURNEYS ───────────────────────────── */
 const JOURNEYS = [
-  { id:'all',      label:'Всі сценарії',              color:'#6366f1',
-    nodes: Object.keys(NODES),
-    conns: CONNS.map(c=>c.id) },
+  { id:'all',        label:'Всі сценарії',           color:'#6366f1',
+    nodes: Object.keys(NODES), conns: CONNS.map(c=>c.id) },
 
-  { id:'happy',    label:'✅ Консультація',            color:'#16a34a',
-    nodes: ['S0','S1','S2','S3','S4','S5','S6','S7','A1','A2','S8'],
-    conns: ['S0-S1','S1-S2','S2-S3','S3-S4','S4-S5','S5-S6','S6-S7','S6-A1','A1-A2','A2-S8','S7-S8'] },
+  { id:'happy',      label:'✅ Консультація',         color:'#16a34a',
+    nodes: ['S0','S1','S2','S3','S4','S5','G1','G2','INT','GI','GC','GF','M1','M2'],
+    conns: ['S0-S1','S1-S2','S2-S3','S3-S4','S4-S5','S5-G1','G1-G2','G2-INT','INT-GI','GI-GC','GI-M1','M1-M2','M2-GC','GC-GF'] },
 
-  { id:'admin',    label:'👨‍💼 Admin Flow',              color:'#0d9488',
-    nodes: ['S6','A1','A2','S8'],
-    conns: ['S6-A1','A1-A2','A2-S8','S7-S8'] },
+  { id:'master',     label:'👩‍💼 Master Flow',          color:'#0d9488',
+    nodes: ['GI','M1','M2','GC','GF'],
+    conns: ['GI-M1','M1-M2','M2-GC','GC-GF'] },
 
-  { id:'redirect', label:'🎓 Я проходив навчання',     color:'#0284c7',
+  { id:'diagnostic', label:'🔬 Діагностика (Q1=Ні)',  color:'#9333ea',
+    nodes: ['G2','INT','EDIAG'],
+    conns: ['G2-INT','INT-EDIAG','EDIAG-INT'] },
+
+  { id:'redirect',   label:'🎓 Я проходив навчання',  color:'#0284c7',
     nodes: ['S0','S1','S10','EXT1'],
     conns: ['S0-S1','S1-S10','S10-EXT1'] },
 
-  { id:'course',   label:'📚 Хочу навчання',           color:'#ea580c',
+  { id:'course',     label:'📚 Хочу навчання',        color:'#ea580c',
     nodes: ['S0','S1','S20','EXT2'],
     conns: ['S0-S1','S1-S20','S20-EXT2'] },
 
-  { id:'payfail',  label:'💳 Оплата не пройшла',       color:'#dc2626',
+  { id:'payfail',    label:'💳 Оплата не пройшла',    color:'#dc2626',
     nodes: ['S3','S4'],
     conns: ['S3-S4','S4-S3'] },
 ];
 
 /* ═══════════════════════════════════════════
-   TELEGRAM MOCKUP
+   MOCKUP BUILDERS
 ═══════════════════════════════════════════ */
-function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function buildTgMock(n) {
-  // Admin nodes: show Consultations Hub mockup
-  if (n.isAdmin) {
-    return buildAdminMock(n);
-  }
+  if (n.isAdmin)    return buildAdminMock(n);
+  if (n.isExternal) return buildExternalCard(n);
 
-  // External nodes: show external link card
-  if (n.isExternal) {
-    return buildExternalCard(n);
-  }
+  const isGroup = n.isGroup;
+  const hdrHtml = isGroup
+    ? `<div class="tg-hdr-group">
+         <div class="tg-avatar-group">MM</div>
+         <div>
+           <div class="tg-bot-name">MULTIMASKING Consultation #047</div>
+           <div class="tg-bot-sub">2 учасники</div>
+         </div>
+       </div>`
+    : `<div class="tg-hdr">
+         <div class="tg-avatar">MM</div>
+         <div>
+           <div class="tg-bot-name">Мультимаскінг Загальний</div>
+           <div class="tg-bot-sub">бот</div>
+         </div>
+       </div>`;
 
   const userBubble = n.tgUserMsg ? `
     <div class="tg-user-wrap">
@@ -513,121 +641,141 @@ function buildTgMock(n) {
     </div>` : '';
 
   const btnsHtml = (n.tgBtns && n.tgBtns.length)
-    ? `<div class="tg-btns">${n.tgBtns.map(b=>`<div class="tg-btn-el">${esc(b)}</div>`).join('')}</div>`
-    : '';
+    ? `<div class="tg-btns">${n.tgBtns.map(b=>`<div class="tg-btn-el">${esc(b)}</div>`).join('')}</div>` : '';
 
   const botBubble = n.tgMsg ? `
     <div class="tg-bubble-wrap">
       <div class="tg-bubble">
         <div class="tg-bubble-text">${esc(n.tgMsg)}</div>
         <div class="tg-bubble-time">14:32</div>
-      </div>
-      ${btnsHtml}
+      </div>${btnsHtml}
     </div>` : '';
 
   const noteHtml = n.tgNote ? `<div class="tg-note">${esc(n.tgNote)}</div>` : '';
 
-  return `
-    <div class="tg-wrap">
-      <div class="tg-hdr">
-        <div class="tg-avatar">MA</div>
-        <div>
-          <div class="tg-bot-name">Consultation Bot</div>
-          <div class="tg-bot-sub">бот</div>
-        </div>
-      </div>
-      <div class="tg-body">
-        ${noteHtml}${userBubble}${botBubble}
-      </div>
-    </div>`;
+  return `<div class="tg-wrap">${hdrHtml}<div class="tg-body">${noteHtml}${userBubble}${botBubble}</div></div>`;
 }
 
 function buildAdminMock(n) {
-  const isA1 = n.id === 'A1';
-  const msgText = n.tgHubMsg || '';
-
+  const isM1 = n.id === 'M1';
+  const msg  = n.tgHubMsg || '';
   return `
     <div class="tg-wrap">
       <div class="tg-hdr-admin">
         <div class="tg-avatar-admin">🔐</div>
         <div>
-          <div class="tg-bot-name-admin">Consultations Hub</div>
-          <div class="tg-bot-sub-admin">${isA1 ? 'вхідні кейси' : 'відповіді адміна'}</div>
+          <div class="tg-bot-name-admin">Master Notification</div>
+          <div class="tg-bot-sub-admin">${isM1 ? 'сповіщення для майстра' : 'підтвердження входу'}</div>
         </div>
       </div>
       <div class="tg-body">
-        <div class="tg-badge">${isA1 ? '📥 Новий кейс від бота' : '✅ Відповідь доставлена'}</div>
-        ${isA1 ? `
+        <div class="tg-badge">${isM1 ? '🔔 Нова консультація' : '✅ Майстер підключився'}</div>
+        ${isM1 ? `
         <div class="tg-bubble-wrap">
           <div class="tg-bubble-admin">
-            <div class="tg-bubble-text" style="color:#d8dde5">${esc(msgText)}</div>
+            <div class="tg-bubble-text" style="color:#d8dde5">${esc(msg)}</div>
             <div class="tg-bubble-time" style="color:#0d9488">Бот · 14:31</div>
           </div>
         </div>
-        <div class="tg-note" style="font-size:11px;color:#0d9488">↩️ Адмін відповідає через reply на це повідомлення</div>
+        <div class="tg-note" style="color:#0d9488;font-size:11px">🔗 Майстер переходить за master_invite_link</div>
         ` : `
-        <div class="tg-forwarded">Кейс #C-2024-047 · відповідь відправлено користувачу</div>
+        <div class="tg-forwarded">Консультація #C-2024-047 · відповідь надіслано</div>
         <div class="tg-bubble-wrap">
           <div class="tg-bubble-admin">
-            <div class="tg-bubble-text" style="color:#d8dde5">${esc(msgText)}</div>
+            <div class="tg-bubble-text" style="color:#d8dde5">${esc(msg)}</div>
             <div class="tg-bubble-time" style="color:#0d9488">15:02</div>
           </div>
-        </div>
-        `}
+        </div>`}
       </div>
     </div>`;
 }
 
 function buildExternalCard(n) {
+  if (n.isBodyTypeBot) return buildBodyTypeBotCard();
+  const btnClass = n.extLink && n.extLink.startsWith('http') ? 'ext-link-btn' : 'ext-link-btn';
   if (n.extLink) {
     return `
       <div class="ext-link-box">
-        <div style="font-size:12px;color:#64748b;line-height:1.5">Зовнішній ресурс — окремий бот зі своєю архітектурою</div>
-        <a class="ext-link-btn" href="${n.extLink}" target="_blank">
-          🔗 ${n.extLabel || 'Відкрити →'}
-        </a>
+        <div style="font-size:12px;color:#64748b;line-height:1.5">Зовнішній ресурс — поза цим ботом</div>
+        <a class="ext-link-btn" href="${n.extLink}" target="_blank">${esc(n.extLabel || 'Відкрити →')}</a>
       </div>`;
   }
+  return `<div class="ext-link-box"><div style="font-size:12px;color:#94a3b8;font-style:italic">Зовнішній ресурс</div></div>`;
+}
+
+function buildBodyTypeBotCard() {
   return `
-    <div class="ext-link-box">
-      <div style="font-size:12px;color:#64748b;line-height:1.5">Зовнішній ресурс — поза цим ботом</div>
-      <div style="font-size:12px;color:#94a3b8;font-style:italic">Лендинг або контакт менеджера</div>
+    <div class="ext-link-box" style="border-color:#c4b5fd">
+      <div style="font-size:12px;color:#64748b;line-height:1.6">
+        Зовнішній бот MULTIMASKING. <strong>13 питань</strong> (варіанти A–E) про стан організму → визначає один з 5 типів.
+      </div>
+      <div class="body-type-chips">
+        <span class="body-type-chip">🦋 Щитоподібний</span>
+        <span class="body-type-chip">⚡ Наднирковий</span>
+        <span class="body-type-chip">🌿 Печінковий</span>
+        <span class="body-type-chip">🌸 Яєчниковий</span>
+        <span class="body-type-chip">✨ Збалансований</span>
+      </div>
+      <a class="ext-link-btn ext-link-btn-purple" href="https://t.me/body_type_bot" target="_blank">🔬 Відкрити body_type_bot →</a>
+      <div style="font-size:11px;color:#94a3b8">Після завершення → повернутись до групи → відповісти на Q2 з результатом</div>
     </div>`;
+}
+
+function buildIntakePanel(n) {
+  return `<div class="intake-flow">${n.questions.map((q,i) => {
+    let body = '';
+    if (q.btns) {
+      body += `<div class="intake-btns-row">${q.btns.map(b => {
+        const isNeg = b==='Ні';
+        return `<span class="intake-btn${isNeg?' warn':''}">${b}${isNeg?' →':'  →'} ${isNeg?'діагностика':'Q2'}</span>`;
+      }).join('')}</div>`;
+    }
+    if (q.branch) body += `<div class="intake-branch">↩ ${esc(q.branch)}</div>`;
+    const typeLabel = q.type==='photo_video'?'📎 Фото або відео':q.type==='text_or_photo'?'✏️ Текст або скрін':'✏️ Вільний текст';
+    if (!q.btns) body += `<div class="intake-type">${typeLabel}</div>`;
+    const reqBadge = q.required ? `<span class="intake-required-badge">🔴 REQUIRED</span>` : '';
+    return `
+      <div class="intake-q${i===0?' open':''}">
+        <div class="intake-q-hdr">
+          <span class="q-num">${q.num}</span>
+          <span class="q-text">${esc(q.text.replace(/\n/g,' '))}${reqBadge}</span>
+          <span class="q-toggle">▼</span>
+        </div>
+        <div class="intake-q-body">${body}</div>
+      </div>`;
+  }).join('')}</div>`;
 }
 
 /* ═══════════════════════════════════════════
    RENDER
 ═══════════════════════════════════════════ */
 let activeJourney = 'all';
-let selectedNode = null;
+let selectedNode  = null;
 
 function init() {
   const jbar = document.getElementById('jbar');
   JOURNEYS.forEach(j => {
     const btn = document.createElement('button');
-    btn.className = 'jbtn' + (j.id === 'all' ? ' active' : '');
+    btn.className = 'jbtn' + (j.id==='all' ? ' active' : '');
     btn.textContent = j.label;
     btn.dataset.jid = j.id;
     btn.addEventListener('click', () => selectJourney(j.id));
     jbar.appendChild(btn);
   });
-
   renderArrows();
   renderNodes();
 }
 
 function renderArrows() {
   const svg = document.getElementById('svg-layer');
-  Array.from(svg.querySelectorAll('path.conn, text.conn-lbl, g.conn-g')).forEach(e => e.remove());
+  Array.from(svg.querySelectorAll('g.conn-g')).forEach(e => e.remove());
 
   CONNS.forEach(c => {
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.classList.add('conn-g');
-    g.dataset.cid = c.id;
+    g.classList.add('conn-g'); g.dataset.cid = c.id;
 
     const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.classList.add('conn');
-    path.dataset.cid = c.id;
+    path.classList.add('conn'); path.dataset.cid = c.id;
     path.setAttribute('d', c.path);
     path.setAttribute('stroke', '#c8d5e3');
     path.setAttribute('stroke-width', '1.8');
@@ -638,44 +786,36 @@ function renderArrows() {
 
     if (c.label) {
       const mid = getMidPoint(c.path);
-      const labelW = Math.min(90, c.label.length * 7 + 16);
+      const lw  = Math.min(100, c.label.length * 6.5 + 16);
       const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      rect.setAttribute('x', mid.x - labelW/2);
-      rect.setAttribute('y', mid.y - 8);
-      rect.setAttribute('width', String(labelW));
-      rect.setAttribute('height', '14');
-      rect.setAttribute('rx', '4');
-      rect.setAttribute('fill', 'white');
-      rect.setAttribute('opacity', '0.9');
+      rect.setAttribute('x', mid.x - lw/2); rect.setAttribute('y', mid.y - 8);
+      rect.setAttribute('width', lw); rect.setAttribute('height', '14');
+      rect.setAttribute('rx', '4'); rect.setAttribute('fill', 'white');
+      rect.setAttribute('opacity', '0.92');
       g.appendChild(rect);
 
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
       txt.classList.add('conn-lbl');
-      txt.setAttribute('x', mid.x);
-      txt.setAttribute('y', mid.y + 3);
-      txt.setAttribute('text-anchor', 'middle');
-      txt.setAttribute('font-size', '9');
+      txt.setAttribute('x', mid.x); txt.setAttribute('y', mid.y + 3);
+      txt.setAttribute('text-anchor', 'middle'); txt.setAttribute('font-size', '9');
       txt.setAttribute('font-weight', '600');
       txt.setAttribute('font-family', '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif');
       txt.setAttribute('fill', '#64748b');
       txt.textContent = c.label;
       g.appendChild(txt);
     }
-
     svg.appendChild(g);
   });
 }
 
 function getMidPoint(pathStr) {
-  const tmpSvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-  tmpSvg.style.position = 'absolute'; tmpSvg.style.visibility = 'hidden';
-  document.body.appendChild(tmpSvg);
-  const tmpPath = document.createElementNS('http://www.w3.org/2000/svg','path');
-  tmpPath.setAttribute('d', pathStr);
-  tmpSvg.appendChild(tmpPath);
-  const len = tmpPath.getTotalLength();
-  const pt = tmpPath.getPointAtLength(len * 0.5);
-  document.body.removeChild(tmpSvg);
+  const s = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.style.cssText = 'position:absolute;visibility:hidden';
+  document.body.appendChild(s);
+  const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d', pathStr); s.appendChild(p);
+  const pt = p.getPointAtLength(p.getTotalLength() * 0.5);
+  document.body.removeChild(s);
   return { x: pt.x, y: pt.y };
 }
 
@@ -685,14 +825,19 @@ function renderNodes() {
   Object.values(NODES).forEach(n => {
     const div = document.createElement('div');
     div.className = `node ${n.cat}`;
+    if (n.isCompound) div.classList.add('node-compound');
     div.dataset.nid = n.id;
     div.style.left = n.cx + 'px';
-    div.style.top = n.cy + 'px';
+    div.style.top  = n.cy + 'px';
+
+    const badge = n.isCompound
+      ? `<div class="node-badge">● ${n.questions.length} питань · натисніть</div>` : '';
+
     div.innerHTML = `
       <div class="node-id">${n.id}</div>
       <div class="node-icon">${n.icon}</div>
       <div class="node-title">${n.title}</div>
-      <div class="node-sub">${n.sub}</div>`;
+      <div class="node-sub">${n.sub}</div>${badge}`;
     div.addEventListener('click', () => selectNode(n.id));
     layer.appendChild(div);
   });
@@ -701,37 +846,31 @@ function renderNodes() {
 /* ─── JOURNEY FILTER ─────────────────────── */
 function selectJourney(jid) {
   activeJourney = jid;
+  document.querySelectorAll('.jbtn').forEach(b => b.classList.toggle('active', b.dataset.jid===jid));
 
-  document.querySelectorAll('.jbtn').forEach(b => {
-    b.classList.toggle('active', b.dataset.jid === jid);
-  });
-
-  const j = JOURNEYS.find(x => x.id === jid);
-  const activeNodes = new Set(j.nodes);
-  const activeConns = new Set(j.conns);
+  const j = JOURNEYS.find(x => x.id===jid);
+  const an = new Set(j.nodes), ac = new Set(j.conns);
 
   document.querySelectorAll('.node').forEach(el => {
-    const inJ = activeNodes.has(el.dataset.nid);
-    el.classList.toggle('dim', !inJ);
-    el.classList.toggle('hl', inJ);
+    el.classList.toggle('dim', !an.has(el.dataset.nid));
+    el.classList.toggle('hl', an.has(el.dataset.nid));
   });
 
-  const svg = document.getElementById('svg-layer');
-  svg.querySelectorAll('g.conn-g').forEach(g => {
-    const inJ = activeConns.has(g.dataset.cid);
+  document.getElementById('svg-layer').querySelectorAll('g.conn-g').forEach(g => {
+    const inJ = ac.has(g.dataset.cid);
     const path = g.querySelector('path');
-    const lbl = g.querySelector('text');
+    const lbl  = g.querySelector('text');
     if (inJ) {
-      const c = CONNS.find(x => x.id === g.dataset.cid);
+      const c = CONNS.find(x => x.id===g.dataset.cid);
       path.setAttribute('stroke', c.color);
       path.setAttribute('stroke-width', '2.2');
       path.setAttribute('opacity', '1');
-      if (lbl) { lbl.setAttribute('fill', c.color); lbl.setAttribute('font-size','10'); }
       path.setAttribute('marker-end', getMarker(c.color));
+      if (lbl) { lbl.setAttribute('fill', c.color); lbl.setAttribute('font-size','10'); }
     } else {
       path.setAttribute('stroke', '#e2e8f0');
       path.setAttribute('stroke-width', '1.5');
-      path.setAttribute('opacity', jid === 'all' ? '1' : '0.2');
+      path.setAttribute('opacity', jid==='all' ? '1' : '0.2');
       path.setAttribute('marker-end', 'url(#arr)');
       if (lbl) { lbl.setAttribute('fill', '#c8d5e3'); lbl.setAttribute('font-size','9'); }
     }
@@ -739,23 +878,17 @@ function selectJourney(jid) {
 }
 
 function getMarker(color) {
-  const map = {
-    '#16a34a': 'url(#arr-green)',
-    '#dc2626': 'url(#arr-red)',
-    '#d97706': 'url(#arr-amber)',
-    '#ea580c': 'url(#arr-orange)',
-    '#6366f1': 'url(#arr-hi)',
-    '#0d9488': 'url(#arr-teal)',
-    '#0284c7': 'url(#arr-blue)',
-  };
-  return map[color] || 'url(#arr)';
+  return ({
+    '#16a34a':'url(#arr-green)', '#dc2626':'url(#arr-red)',
+    '#d97706':'url(#arr-amber)', '#ea580c':'url(#arr-orange)',
+    '#6366f1':'url(#arr-hi)',    '#0d9488':'url(#arr-teal)',
+    '#0284c7':'url(#arr-blue)',  '#9333ea':'url(#arr-purple)',
+  })[color] || 'url(#arr)';
 }
 
 /* ─── NODE DETAIL PANEL ──────────────────── */
 function selectNode(nid) {
-  const n = NODES[nid];
-  if (!n) return;
-
+  const n = NODES[nid]; if (!n) return;
   document.querySelectorAll('.node.sel').forEach(el => el.classList.remove('sel'));
   document.querySelector(`.node[data-nid="${nid}"]`).classList.add('sel');
   selectedNode = nid;
@@ -765,36 +898,47 @@ function selectNode(nid) {
   panel.classList.add('open');
 
   const catColors = {
-    'c-entry':'#7c3aed','c-neutral':'#0284c7','c-success':'#16a34a',
-    'c-error':'#dc2626','c-pending':'#d97706','c-warning':'#ea580c',
-    'c-admin':'#0d9488','c-external':'#64748b'
+    'c-entry':'#7c3aed', 'c-neutral':'#0284c7',  'c-success':'#16a34a',
+    'c-error':'#dc2626', 'c-pending':'#d97706',   'c-warning':'#ea580c',
+    'c-intake':'#9333ea','c-active':'#059669',    'c-removed':'#6b7280',
+    'c-admin':'#0d9488', 'c-external':'#64748b',
   };
-  const catColor = catColors[n.cat] || '#64748b';
-
   const catLabels = {
-    'c-entry':'Точка входу','c-neutral':'Інформація','c-success':'Успіх',
-    'c-error':'Помилка','c-pending':'Очікування','c-warning':'Попередження',
-    'c-admin':'Адмін','c-external':'Зовнішній'
+    'c-entry':'Точка входу',  'c-neutral':'Інформація', 'c-success':'Успіх',
+    'c-error':'Помилка',      'c-pending':'Очікування', 'c-warning':'Попередження',
+    'c-intake':'Intake / Група','c-active':'Активна консульт.','c-removed':'Завершено',
+    'c-admin':'Майстер',      'c-external':'Зовнішній',
   };
 
-  const nextPills = (n.next || []).map(sid => {
-    const target = NODES[sid];
-    if (!target) return '';
-    const cc = catColors[target.cat] || '#64748b';
-    return `<span class="next-pill" style="color:${cc};border-color:${cc}20;background:${cc}0d"
-      onclick="selectNode('${sid}')">${target.icon} ${sid}: ${target.title}</span>`;
+  const cc = catColors[n.cat] || '#64748b';
+
+  const nextPills = (n.next||[]).map(sid => {
+    const t = NODES[sid]; if (!t) return '';
+    const tc = catColors[t.cat]||'#64748b';
+    return `<span class="next-pill" style="color:${tc};border-color:${tc}22;background:${tc}0d"
+      onclick="selectNode('${sid}')">${t.icon} ${sid}: ${t.title}</span>`;
   }).join('');
 
-  const tgSection = (n.tgMsg || n.isAdmin || n.isExternal) ? `
-    <div class="d-sec">
-      <div class="d-sec-title">Вигляд в Telegram</div>
-      ${buildTgMock(n)}
-    </div>` : '';
+  // ── Content section (Telegram mockup OR intake panel OR external card)
+  let contentHtml = '';
+  if (n.isCompound && n.questions) {
+    contentHtml = `
+      <div class="d-sec">
+        <div class="d-sec-title">Питання анкети · ${n.questions.length} кроків</div>
+        ${buildIntakePanel(n)}
+      </div>`;
+  } else if (n.tgMsg || n.isAdmin || n.isExternal) {
+    contentHtml = `
+      <div class="d-sec">
+        <div class="d-sec-title">Вигляд в Telegram</div>
+        ${buildTgMock(n)}
+      </div>`;
+  }
 
   inner.innerHTML = `
     <div class="d-hdr">
       <div>
-        <div class="d-id" style="background:${catColor}18;color:${catColor}">${n.id} · ${catLabels[n.cat]}</div>
+        <div class="d-id" style="background:${cc}18;color:${cc}">${n.id} · ${catLabels[n.cat]||n.cat}</div>
         <div class="d-name">${n.icon} ${n.title}</div>
       </div>
       <button class="d-close" onclick="closePanel()">✕</button>
@@ -823,11 +967,11 @@ function selectNode(nid) {
 
     ${n.userCan && n.userCan.length ? `
     <div class="d-sec">
-      <div class="d-sec-title">Що може зробити ${n.isAdmin ? 'адмін' : 'користувач'}</div>
+      <div class="d-sec-title">Що може зробити ${n.isAdmin ? 'майстер' : 'користувач'}</div>
       <ul class="d-list">${n.userCan.map(a=>`<li>${a}</li>`).join('')}</ul>
     </div>` : ''}
 
-    ${tgSection}
+    ${contentHtml}
 
     ${n.biz ? `
     <hr class="divider">
@@ -855,6 +999,11 @@ function selectNode(nid) {
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">${nextPills}</div>
     </div>` : ''}
   `;
+
+  // Intake accordion toggle
+  inner.querySelectorAll('.intake-q-hdr').forEach(hdr => {
+    hdr.addEventListener('click', () => hdr.parentElement.classList.toggle('open'));
+  });
 }
 
 function closePanel() {
@@ -863,10 +1012,9 @@ function closePanel() {
   selectedNode = null;
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-
+document.addEventListener('keydown', e => { if (e.key==='Escape') closePanel(); });
 document.getElementById('dcanvas').addEventListener('click', e => {
-  if (e.target === document.getElementById('dcanvas') || e.target === document.getElementById('nodes-layer')) closePanel();
+  if (e.target===document.getElementById('dcanvas') || e.target===document.getElementById('nodes-layer')) closePanel();
 });
 
 init();
