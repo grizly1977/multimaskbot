@@ -388,39 +388,35 @@ const NODES = {
 
   INT: { id:'INT', title:'Intake Questions', icon:'📋', cat:'c-intake', cx:560, cy:1290,
     isCompound: true,
-    sub:'Q1–Q11 · Анкетування в групі · один крок за раз',
+    sub:'Q1–Q5 · Анкетування в групі · один крок за раз',
     when:'Після входу користувача в групу (G2)',
-    userCan:['Відповідати на питання послідовно','Надсилати фото/відео на Q5','Пройти body_type_bot якщо Q1 = Ні'],
+    userCan:['Обрати тип статури або пройти діагностику (Q1)','Відповідати на питання послідовно','Завантажити фото / відео на Q4'],
     next:['GI','EDIAG'],
     state:'INTAKE_IN_PROGRESS',
     trigger:'G2: user joined → bot sends Q1',
     condition:'consultation.status = INTAKE_IN_PROGRESS',
-    biz:'Бот ставить по одному питанню (state machine). Зберігає відповідь → переходить до наступного. Неправильний формат → повторити питання. Q5 (фото/відео) обов\'язковий — без нього прогрес заблокований. Після Q11 → GI.',
-    errors:['Q5: відсутнє фото/відео → блокувати прогрес, повторити запит','Неправильний формат → повторити поточне питання','Сторонні повідомлення → ігнорувати + нагадати поточне питання'],
+    biz:'Бот ставить по одному питанню (state machine). Зберігає відповідь → переходить до наступного. Неправильний формат → повторити питання. Q4 (фото/відео) обов\'язковий — без нього прогрес заблокований. Після Q5 → GI.',
+    errors:['Q4: відсутнє фото/відео → блокувати прогрес, повторити запит','Неправильний формат відповіді → повторити поточне питання','Сторонні повідомлення → ігнорувати + нагадати поточне питання'],
     repeat:'При перезапуску → відновити з поточного питання (не починати заново)',
     questions: [
-      { num:'Q1', text:'Чи проходили ви бот-діагностику MULTIMASKING?', type:'buttons', btns:['Так','Ні'], branch:'Якщо "Ні" → редірект на t.me/body_type_bot → після завершення повернення до Q2' },
-      { num:'Q2', text:'Який тип вам визначив бот?\n(або прикріпіть скрін результату)', type:'text_or_photo' },
-      { num:'Q3', text:'Що вас турбує зараз?', type:'text' },
-      { num:'Q4', text:'Що ви вже пробували?', type:'text' },
-      { num:'Q5', text:'Прикріпіть фото або відео', type:'photo_video', required:true },
-      { num:'Q6', text:'Чи є набряки?', type:'text' },
-      { num:'Q7', text:'Чи є відчуття "м\'якого / твердого / желейного тіла"?', type:'text' },
-      { num:'Q8', text:'Чи легко набираєте вагу?', type:'text' },
-      { num:'Q9', text:'Чи важко її скинути?', type:'text' },
-      { num:'Q10', text:'Чи було гірше після процедур?', type:'text' },
-      { num:'Q11', text:'Чи готові змінювати підхід?', type:'text' },
+      { num:'Q1', text:'Чи знаєте ви свій тип статури, визначений ботом-опитувальником?', type:'buttons',
+        btns:['щитовидний тип','печінковий тип','яєчниковий тип','адреналиновий тип','збалансований тип','Я не знаю який тип'],
+        branch:'Якщо "Я не знаю який тип" → редірект на t.me/body_type_bot → після завершення повернення до Q2' },
+      { num:'Q2', text:'Що вас турбує зараз?', type:'text' },
+      { num:'Q3', text:'Що ви вже пробували з процедур, дієт тощо?', type:'text' },
+      { num:'Q4', text:'Надішліть фото або відео проблемної зони — бажано при денному освітленні, без фільтрів. Що детальніше, то точніша буде відповідь.', type:'photo_video', required:true },
+      { num:'Q5', text:'Чи готові ви змінювати підхід, якщо він зараз не працює?', type:'text' },
     ],
     tgMsg:'',
     tgBtns:[] },
 
   EDIAG: { id:'EDIAG', title:'body_type_bot', icon:'🔬', cat:'c-external', cx:170, cy:1290,
     sub:'Діагностика типу тіла — 13 питань',
-    when:'Q1 = "Ні" (користувач не проходив діагностику)',
+    when:'Q1 = "Я не знаю який тип" (натиснута відповідна кнопка)',
     userCan:['Пройти 13-крокову діагностику (A–E відповіді)','Дізнатись тип тіла','Повернутись до групи і відповісти на Q2'],
     next:['INT'],
     state:'EXTERNAL',
-    trigger:'Q1 = Ні → посилання t.me/body_type_bot?start=from_consultation_group_{id}',
+    trigger:'Кнопка "Я не знаю який тип" у Q1 → посилання t.me/body_type_bot?start=from_consultation_group_{id}',
     condition:'Зовнішній бот — поза цією групою',
     biz:'Зовнішній бот діагностики типу тіла MULTIMASKING. 13 питань (A–E варіанти) про: стан шкіри, сон, травлення, настрій, волосся/нігті, ССС, ШКТ, загальні відчуття. Результат → один з 5 типів. Після завершення → користувач сам повертається до групи і відповідає на Q2 з результатом.',
     errors:['Не повернувся після діагностики → нагадування через 1 годину'],
@@ -438,8 +434,8 @@ const NODES = {
     userCan:['Очікувати підключення майстра'],
     next:['GC','M1'],
     state:'WAITING_MASTER',
-    trigger:'Відповідь на Q11 отримана, всі поля заповнені',
-    condition:'intake.q1–q11 = all answered, q5 = photo/video present',
+    trigger:'Відповідь на Q5 отримана, всі поля заповнені',
+    condition:'intake.q1–q5 = all answered, q4 = photo/video present',
     biz:'1. Зберегти всі відповіді в answers_json. 2. consultation.status = WAITING_MASTER. 3. Відправити майстру сповіщення з summary (→ M1). 4. Відправити користувачу підтвердження. 5. Бот готує summary відповідей для майстра.',
     errors:['Q5 не заповнено → не переходити до GI, повернути до Q5'],
     repeat:'Після GI стан незмінний до підключення майстра',
@@ -564,9 +560,9 @@ const CONNS = [
   { id:'S5-G1',    from:'S5',  to:'G1',   label:'',              path:'M 560 866 L 560 944',                                   color:'#94a3b8' },
   { id:'G1-G2',    from:'G1',  to:'G2',   label:'',              path:'M 560 1016 L 560 1094',                                  color:'#94a3b8' },
   { id:'G2-INT',   from:'G2',  to:'INT',  label:'',              path:'M 560 1166 L 560 1246',                                  color:'#9333ea' },
-  { id:'INT-GI',   from:'INT', to:'GI',   label:'Q11 ✓',         path:'M 560 1334 L 560 1424',                                  color:'#9333ea' },
-  { id:'INT-EDIAG',from:'INT', to:'EDIAG',label:'Q1 = Ні',       path:'M 440 1290 L 262 1290',                                  color:'#dc2626' },
-  { id:'EDIAG-INT',from:'EDIAG',to:'INT', label:'повернення',    path:'M 80 1290 C 20 1340 20 1380 440 1334',                  color:'#0284c7', dashed:true },
+  { id:'INT-GI',   from:'INT', to:'GI',   label:'Q5 ✓',          path:'M 560 1334 L 560 1424',                                  color:'#9333ea' },
+  { id:'INT-EDIAG',from:'INT', to:'EDIAG',label:'не знаю тип',   path:'M 440 1290 L 262 1290',                                  color:'#dc2626' },
+  { id:'EDIAG-INT',from:'EDIAG',to:'INT', label:'→ Q2',          path:'M 80 1290 C 20 1340 20 1380 440 1334',                  color:'#0284c7', dashed:true },
   // ── Consultation ──
   { id:'GI-GC',    from:'GI',  to:'GC',   label:'',              path:'M 560 1496 L 560 1574',                                  color:'#94a3b8' },
   { id:'GI-M1',    from:'GI',  to:'M1',   label:'→ майстру',     path:'M 650 1460 L 1140 1460',                                 color:'#0d9488' },
@@ -725,13 +721,19 @@ function buildIntakePanel(n) {
   return `<div class="intake-flow">${n.questions.map((q,i) => {
     let body = '';
     if (q.btns) {
-      body += `<div class="intake-btns-row">${q.btns.map(b => {
-        const isNeg = b==='Ні';
-        return `<span class="intake-btn${isNeg?' warn':''}">${b}${isNeg?' →':'  →'} ${isNeg?'діагностика':'Q2'}</span>`;
-      }).join('')}</div>`;
+      // Last button ("Я не знаю") is special — triggers diagnostic redirect
+      const lastIdx = q.btns.length - 1;
+      body += `<div class="intake-btns-row" style="flex-direction:column;gap:4px">
+        ${q.btns.map((b,bi) => {
+          const isUnknown = bi === lastIdx;
+          return `<span class="intake-btn${isUnknown ? ' warn' : ''}" style="display:block;width:fit-content">
+            ${isUnknown ? '❓ ' : ''}${b}${isUnknown ? ' → діагностика' : ' → Q2'}
+          </span>`;
+        }).join('')}
+      </div>`;
     }
     if (q.branch) body += `<div class="intake-branch">↩ ${esc(q.branch)}</div>`;
-    const typeLabel = q.type==='photo_video'?'📎 Фото або відео':q.type==='text_or_photo'?'✏️ Текст або скрін':'✏️ Вільний текст';
+    const typeLabel = q.type==='photo_video' ? '📎 Фото або відео (обов\'язково)' : '✏️ Вільний текст';
     if (!q.btns) body += `<div class="intake-type">${typeLabel}</div>`;
     const reqBadge = q.required ? `<span class="intake-required-badge">🔴 REQUIRED</span>` : '';
     return `
