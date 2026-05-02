@@ -30,7 +30,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ─── Diagram area ───────────────────────── */
 #dwrap{flex:1;overflow:auto;padding:20px;background:#f1f5f9}
-#dcanvas{position:relative;width:1540px;height:1880px;background:#fff;border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+#dcanvas{position:relative;width:1540px;height:1580px;background:#fff;border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
 #svg-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 
 /* ─── Section backgrounds ────────────────── */
@@ -166,10 +166,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div>
       <h1>Мультимаскінг Загальний</h1>
-      <p>Консультація · Унікальна група для кожного клієнта</p>
+      <p>Консультація · Forum Supergroup · Hub-Proxy Pattern</p>
     </div>
   </div>
-  <span id="hdr-badge">19 екранів · 7 сценаріїв</span>
+  <span id="hdr-badge">17 екранів · 7 сценаріїв</span>
 </div>
 
 <div id="jbar">
@@ -193,7 +193,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="nodes-layer"></div>
 
       <!-- Section: Основний Flow -->
-      <div class="sec" style="left:80px;top:40px;width:620px;height:1830px;border-color:#e2e8f0;background:transparent"></div>
+      <div class="sec" style="left:80px;top:40px;width:620px;height:1520px;border-color:#e2e8f0;background:transparent"></div>
       <div class="sec-lbl" style="left:94px;top:28px;color:#94a3b8">Основний Flow</div>
 
       <!-- Section: Я проходив навчання -->
@@ -204,17 +204,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="sec" style="left:810px;top:315px;width:220px;height:260px;border-color:#fed7aa;background:#fff7ed14"></div>
       <div class="sec-lbl" style="left:818px;top:302px;color:#ea580c">Хочу навчання</div>
 
-      <!-- Section: Group Flow -->
-      <div class="sec" style="left:80px;top:920px;width:620px;height:950px;border-color:#99f6e4;background:#f0fdfa0a"></div>
-      <div class="sec-lbl" style="left:94px;top:908px;color:#0d9488">Group Flow — унікальна група</div>
+      <!-- Section: Консультація в боті -->
+      <div class="sec" style="left:80px;top:928px;width:620px;height:300px;border-color:#c4b5fd;background:#faf5ff0a"></div>
+      <div class="sec-lbl" style="left:94px;top:916px;color:#9333ea">Консультація в боті</div>
 
       <!-- Section: Діагностика бот -->
-      <div class="sec" style="left:80px;top:1222px;width:220px;height:164px;border-color:#c4b5fd;background:#faf5ff12"></div>
-      <div class="sec-lbl" style="left:88px;top:1210px;color:#9333ea">Діагностика бот</div>
+      <div class="sec" style="left:80px;top:948px;width:220px;height:115px;border-color:#c4b5fd;background:#faf5ff12"></div>
+      <div class="sec-lbl" style="left:88px;top:936px;color:#9333ea">Діагностика бот</div>
 
-      <!-- Section: Master Flow -->
-      <div class="sec" style="left:1100px;top:1390px;width:340px;height:310px;border-color:#99f6e4;background:#f0fdfa0a"></div>
-      <div class="sec-lbl" style="left:1112px;top:1378px;color:#0d9488">Master Flow</div>
+      <!-- Section: Forum Supergroup -->
+      <div class="sec" style="left:1095px;top:1090px;width:350px;height:330px;border-color:#99f6e4;background:#f0fdfa0a"></div>
+      <div class="sec-lbl" style="left:1108px;top:1078px;color:#0d9488">Forum Supergroup 💬</div>
 
       <div id="legend">
         <div class="leg-title">Легенда</div>
@@ -223,7 +223,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="leg-item"><div class="leg-dot" style="background:#f0f9ff;border-color:#0284c7"></div>Нейтральний</div>
           <div class="leg-item"><div class="leg-dot" style="background:#dcfce7;border-color:#16a34a"></div>Успіх</div>
           <div class="leg-item"><div class="leg-dot" style="background:#fef3c7;border-color:#d97706"></div>Очікування</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#faf5ff;border-color:#9333ea"></div>Intake (група)</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#faf5ff;border-color:#9333ea"></div>Intake / Анкетування</div>
           <div class="leg-item"><div class="leg-dot" style="background:#d1fae5;border-color:#059669"></div>Активна консульт.</div>
           <div class="leg-item"><div class="leg-dot" style="background:#f0fdfa;border-color:#0d9488"></div>Адмін / Майстер</div>
           <div class="leg-item"><div class="leg-dot" style="background:#f8fafc;border-color:#64748b;border-style:dashed"></div>Зовнішній</div>
@@ -266,7 +266,7 @@ const NODES = {
     state:'IN_MENU',
     trigger:'/start або повернення з будь-якого екрана',
     condition:'Завжди. Якщо є активний незавершений стан — показати відповідне повідомлення відновлення перед меню.',
-    biz:'Якщо user.state = PAYMENT_PENDING → показати нагадування про незавершену оплату. Якщо USER_IN_GROUP → нагадати про активну групу. Якщо написав довільний текст замість вибору — повторити меню.',
+    biz:'Якщо user.state = PAYMENT_PENDING → показати нагадування про незавершену оплату. Якщо INTAKE_IN_PROGRESS → повернути до поточного питання анкети. Якщо написав довільний текст замість вибору — повторити меню.',
     errors:['Якщо довільний текст замість кнопки → повторити меню'],
     repeat:'Повторний /start → завжди повертає в Main Menu, але спочатку перевіряє активний стан',
     tgMsg:'Вітаємо! 👋\n\nЩо вас цікавить?',
@@ -280,10 +280,10 @@ const NODES = {
     state:'VIEWED_CONSULTATION',
     trigger:'Натискання кнопки "Консультація" в S1',
     condition:'Немає активної незавершеної консультації. Якщо є — показати статус існуючої.',
-    biz:'Чітко описати формат: 1 оплата = 1 унікальна група = 1 консультація. Не дозволяти переходити до оплати якщо є активна незавершена. Якщо пише текст кейсу до оплати → пояснити що треба спочатку оплатити.',
+    biz:'Чітко описати формат: 1 оплата = 1 Forum-тема = 1 консультація. Не дозволяти переходити до оплати якщо є активна незавершена. Якщо пише текст кейсу до оплати → пояснити що треба спочатку оплатити.',
     errors:['Якщо пише кейс до оплати → нагадати оплатити спочатку'],
     repeat:'При повторному відкритті — показати той самий екран',
-    tgMsg:'💬 Персональна консультація з Мультимаскінгу\n\n✅ Що входить:\n— Особистий розбір вашого кейсу від Ольги Русанової\n— Рекомендації щодо протоколу мультимаскінгу\n— Розгорнута відповідь на ваше питання\n\n📸 Формат: надсилаєте фото / відео + відповіді на питання → отримуєте детальний розбір у приватній групі\n\nВартість: 1$',
+    tgMsg:'💬 Персональна консультація з Мультимаскінгу\n\n✅ Що входить:\n— Особистий розбір вашого кейсу від Ольги Русанової\n— Рекомендації щодо протоколу мультимаскінгу\n— Розгорнута відповідь на ваше питання\n\n📸 Формат: відповідаєте на кілька питань + надсилаєте фото / відео → отримуєте детальний розбір прямо в боті\n\nВартість: 1$',
     tgBtns:['💳 Оплатити консультацію','← Назад'] },
 
   S10: { id:'S10', title:'Redirect', icon:'🎓', cat:'c-neutral', cx:170, cy:380,
@@ -325,7 +325,7 @@ const NODES = {
     biz:'1. Створити payment session. 2. Зберегти: payment_id, user_id, consultation_pre_id, provider, amount, currency. 3. Відправити сервісне повідомлення з посиланням. 4. Зафіксувати стан PAYMENT_PENDING. 5. Очікувати webhook.',
     errors:['Не вдалося створити payment session → показати помилку + retry','Немає payment URL → логувати + помилка'],
     repeat:'Повторна спроба → переперевірити наявний pending або створити новий',
-    tgMsg:'🔗 Відкриваємо сторінку оплати.\n\nПісля підтвердження ми створимо вашу персональну консультаційну групу.',
+    tgMsg:'🔗 Відкриваємо сторінку оплати.\n\nПісля підтвердження відразу розпочнемо анкетування прямо в боті.',
     tgBtns:[],
     tgNote:'Посилання на оплату відкривається в зовнішній системі (WayForPay / Stripe / LiqPay).' },
 
@@ -337,65 +337,36 @@ const NODES = {
     state:'PAYMENT_PENDING',
     trigger:'Створено payment session, очікується webhook',
     condition:'payment.status = pending',
-    biz:'webhook success → S5 (Group Creating). webhook failed → показати помилку + retry. Перевірити оплату → запит до payment status API. Edge cases: duplicate webhook → ігнорувати + логувати.',
+    biz:'webhook success → S5 (Intake Starting). webhook failed → показати помилку + retry. Перевірити оплату → запит до payment status API. Edge cases: duplicate webhook → ігнорувати + логувати.',
     errors:['Webhook failed → показати помилку, кнопка "Спробувати ще раз"','Duplicate webhook → ігнорувати, логувати як duplicate'],
     repeat:'Повторний /start при PAYMENT_PENDING → показати цей екран',
     tgMsg:'⏳ Очікуємо підтвердження оплати.\n\nЯкщо сторінку оплати було закрито або виникла помилка — спробуйте ще раз.',
     tgBtns:['🔄 Перевірити оплату','💳 Оплатити ще раз','← Назад'] },
 
   S5: { id:'S5', title:'Payment Success', icon:'🎉', cat:'c-success', cx:560, cy:830,
-    sub:'Оплата підтверджена — створюємо групу',
+    sub:'Оплата підтверджена — починаємо анкетування в боті',
     when:'Webhook success отримано',
-    userCan:['Натиснути "Перейти до консультації"'],
-    next:['G1'],
-    state:'GROUP_CREATING',
-    trigger:'Webhook від платіжної системи зі статусом success',
-    condition:'payment.status = success, webhook не дублюється',
-    biz:'1. Верифікувати платіж. 2. Створити запис консультації. 3. Призначити унікальну групу з пулу (MVP). 4. Згенерувати user_invite_link та master_invite_link. 5. Зберегти: consultation_id, group_id, user_invite_link, master_invite_link, status. 6. Відправити invite link користувачу.',
-    errors:['Не вдалося призначити групу → повідомити адміна + показати помилку користувачу','Webhook невалідний → не відкривати доступ, логувати'],
-    repeat:'Повторний /start при GROUP_CREATING → повторно відправити invite link',
-    tgMsg:'Оплата пройшла успішно ✅\n\nМи створили для вас окрему групу для консультації.\nПерейдіть за посиланням нижче, щоб продовжити.',
-    tgBtns:['👥 Перейти до консультації'] },
-
-  G1: { id:'G1', title:'Group Created', icon:'🏠', cat:'c-success', cx:560, cy:980,
-    sub:'Унікальна група призначена — invite link відправлено',
-    when:'Після підтвердження оплати (S5)',
-    userCan:['Перейти за invite link до групи'],
-    next:['G2'],
-    state:'GROUP_READY',
-    trigger:'S5: payment verified → group assigned from pool',
-    condition:'group.status = available у пулі pre-created груп',
-    biz:'MVP: пул pre-created груп. Назва групи: "MULTIMASKING Consultation #<id>". DB: зберегти consultation_id, group_id, user_invite_link, master_invite_link, status=assigned. Якщо пул порожній → сповістити адміна + показати користувачу затримку. Правило: 1 payment = 1 group, без reuse.',
-    errors:['Пул порожній → сповістити адміна, повідомити користувача про затримку','Invite link не згенеровано → retry 3 рази, потім підтримка'],
-    repeat:'При повторному /start → повторно надіслати той самий invite link',
-    tgMsg:'🏠 Ваша персональна група для консультації готова!\n\nПерейдіть за посиланням — там ми поставимо кілька запитань, щоб підготувати точну відповідь від Ольги.',
-    tgBtns:['👥 Перейти до групи'] },
-
-  G2: { id:'G2', title:'User Joins Group', icon:'👥', cat:'c-neutral', cx:560, cy:1130,
-    sub:'Користувач приєднався до групи — анкетування починається',
-    when:'Бот отримує подію new_chat_member для даного user_id',
-    userCan:['Очікувати першого питання від бота'],
+    userCan:['Відповідати на питання анкети Q1–Q5 прямо в боті'],
     next:['INT'],
     state:'INTAKE_STARTING',
-    trigger:'Telegram webhook: new_chat_member event у consultation group',
-    condition:'user_id відповідає consultation.user_id для цієї групи',
-    biz:'Бот обробляє подію входу користувача. Верифікує user_id. Запускає intake state machine → Q1. Якщо приєднався не той user_id → kick + повідомлення. Якщо не приєднався протягом 24 год → нагадування в боті.',
-    errors:['Невірний user_id → kick + "Ця група призначена для іншого користувача"','Не приєднався 24год → нагадування з repeat invite link'],
-    repeat:'При повторному вході → перевірити стан intake і продовжити з поточного питання',
-    tgMsg:'Вітаємо у вашій персональній консультаційній групі! 👋\n\nЩоб Ольга могла підготувати точну відповідь — поставимо кілька коротких запитань.\n\nПочнемо?',
-    tgBtns:['✅ Почати'],
-    isGroup: true },
+    trigger:'Webhook від платіжної системи зі статусом success',
+    condition:'payment.status = success, webhook не дублюється',
+    biz:'1. payment.status = PAID. 2. Створити consultation record. 3. user.state = INTAKE_STARTING. 4. Idempotent: якщо success вже оброблявся — не відправляти повторно. 5. Бот негайно розпочинає анкетування — надсилає Q1 прямо в приватний чат.',
+    errors:['Webhook невалідний → не відкривати доступ, логувати','Не вдалося активувати → логувати + повідомити + підтримка'],
+    repeat:'Повторний /start при INTAKE_IN_PROGRESS → повернутись до поточного питання',
+    tgMsg:'Оплата пройшла успішно ✅\n\nТепер відповімо на кілька коротких питань — це допоможе Ользі підготувати точну відповідь.\n\nПочинаємо 👇',
+    tgBtns:[] },
 
-  INT: { id:'INT', title:'Intake Questions', icon:'📋', cat:'c-intake', cx:560, cy:1290,
+  INT: { id:'INT', title:'Intake Questions', icon:'📋', cat:'c-intake', cx:560, cy:980,
     isCompound: true,
-    sub:'Q1–Q5 · Анкетування в групі · один крок за раз',
-    when:'Після входу користувача в групу (G2)',
+    sub:'Q1–Q5 · Анкетування в боті · один крок за раз',
+    when:'Після підтвердження оплати (S5), безпосередньо в боті',
     userCan:['Обрати тип статури або пройти діагностику (Q1)','Відповідати на питання послідовно','Завантажити фото / відео на Q4'],
     next:['GI','EDIAG'],
     state:'INTAKE_IN_PROGRESS',
-    trigger:'G2: user joined → bot sends Q1',
+    trigger:'S5: payment success → бот починає intake state machine у приватному чаті',
     condition:'consultation.status = INTAKE_IN_PROGRESS',
-    biz:'Бот ставить по одному питанню (state machine). Зберігає відповідь → переходить до наступного. Неправильний формат → повторити питання. Q4 (фото/відео) обов\'язковий — без нього прогрес заблокований. Після Q5 → GI.',
+    biz:'Бот ставить по одному питанню в приватному чаті (state machine). Зберігає відповідь → переходить до наступного. Неправильний формат → повторити питання. Q4 (фото/відео) обов\'язковий — без нього прогрес заблокований. Після Q5 → GI (бот створює Forum-тему та повідомляє Ольгу).',
     errors:['Q4: відсутнє фото/відео → блокувати прогрес, повторити запит','Неправильний формат відповіді → повторити поточне питання','Сторонні повідомлення → ігнорувати + нагадати поточне питання'],
     repeat:'При перезапуску → відновити з поточного питання (не починати заново)',
     questions: [
@@ -410,17 +381,17 @@ const NODES = {
     tgMsg:'',
     tgBtns:[] },
 
-  EDIAG: { id:'EDIAG', title:'body_type_bot', icon:'🔬', cat:'c-external', cx:170, cy:1290,
+  EDIAG: { id:'EDIAG', title:'body_type_bot', icon:'🔬', cat:'c-external', cx:170, cy:980,
     sub:'Діагностика типу тіла — 13 питань',
     when:'Q1 = "Я не знаю який тип" (натиснута відповідна кнопка)',
-    userCan:['Пройти 13-крокову діагностику (A–E відповіді)','Дізнатись тип тіла','Повернутись до групи і відповісти на Q2'],
+    userCan:['Пройти 13-крокову діагностику (A–E відповіді)','Дізнатись тип тіла','Повернутись до бота і відповісти на Q2'],
     next:['INT'],
     state:'EXTERNAL',
-    trigger:'Кнопка "Я не знаю який тип" у Q1 → посилання t.me/body_type_bot?start=from_consultation_group_{id}',
-    condition:'Зовнішній бот — поза цією групою',
-    biz:'Зовнішній бот діагностики типу тіла MULTIMASKING. 13 питань (A–E варіанти) про: стан шкіри, сон, травлення, настрій, волосся/нігті, ССС, ШКТ, загальні відчуття. Результат → один з 5 типів. Після завершення → користувач сам повертається до групи і відповідає на Q2 з результатом.',
+    trigger:'Кнопка "Я не знаю який тип" у Q1 → посилання t.me/body_type_bot?start=from_consultation_{id}',
+    condition:'Зовнішній бот — поза цим ботом',
+    biz:'Зовнішній бот діагностики типу тіла MULTIMASKING. 13 питань (A–E варіанти) про: стан шкіри, сон, травлення, настрій, волосся/нігті, ССС, ШКТ, загальні відчуття. Результат → один з 5 типів. Після завершення → користувач повертається до бота і відповідає на Q2 з результатом.',
     errors:['Не повернувся після діагностики → нагадування через 1 годину'],
-    repeat:'Якщо вже проходив → Q1 = Так, EDIAG пропускається',
+    repeat:'Якщо вже проходив → Q1 = тип обрано, EDIAG пропускається',
     tgMsg:'',
     tgBtns:[],
     extLink:'https://t.me/body_type_bot',
@@ -428,80 +399,80 @@ const NODES = {
     isExternal: true,
     isBodyTypeBot: true },
 
-  GI: { id:'GI', title:'Intake Complete', icon:'✅', cat:'c-success', cx:560, cy:1460,
-    sub:'Всі питання анкети отримані — майстер повідомлений',
-    when:'Після відповіді на Q11',
-    userCan:['Очікувати підключення майстра'],
+  GI: { id:'GI', title:'Intake Complete', icon:'✅', cat:'c-success', cx:560, cy:1140,
+    sub:'Анкету завершено — Forum-тему створено, Ольга повідомлена',
+    when:'Після відповіді на Q5',
+    userCan:['Очікувати відповідь від Ольги прямо в боті'],
     next:['GC','M1'],
-    state:'WAITING_MASTER',
+    state:'WAITING_EXPERT',
     trigger:'Відповідь на Q5 отримана, всі поля заповнені',
     condition:'intake.q1–q5 = all answered, q4 = photo/video present',
-    biz:'1. Зберегти всі відповіді в answers_json. 2. consultation.status = WAITING_MASTER. 3. Відправити майстру сповіщення з summary (→ M1). 4. Відправити користувачу підтвердження. 5. Бот готує summary відповідей для майстра.',
-    errors:['Q5 не заповнено → не переходити до GI, повернути до Q5'],
-    repeat:'Після GI стан незмінний до підключення майстра',
-    tgMsg:'Дякуємо, ви відповіли на всі питання ✅\n\nМайстер скоро підключиться.\nЯк тільки Ольга з\'явиться в групі — ваша консультація розпочнеться.',
-    tgBtns:[],
-    isGroup: true },
+    biz:'1. Зберегти всі відповіді в answers_json. 2. consultation.status = WAITING_EXPERT. 3. Бот викликає createForumTopic API у Forum Supergroup. Назва теми: "Consultation #<id> · @username". 4. Зберігає consultation_id → thread_id mapping. 5. Відправляє структурований summary в тему. 6. Надсилає Ользі push з deep link на тему. 7. Повідомляє користувача.',
+    errors:['createForumTopic failed → retry 3 рази → fallback: сповістити адміна','thread_id не збережено → критична помилка, логувати','Q5 не заповнено → не переходити до GI'],
+    repeat:'Після GI стан незмінний до першої відповіді Ольги',
+    tgMsg:'Дякуємо, ви відповіли на всі питання ✅\n\nОльга вже отримала ваш кейс і незабаром надішле відповідь прямо сюди.',
+    tgBtns:[] },
 
-  M1: { id:'M1', title:'Master Notification', icon:'🔔', cat:'c-admin', cx:1230, cy:1460,
-    sub:'Ольга отримує сповіщення + summary + посилання в групу',
+  M1: { id:'M1', title:'Topic Created', icon:'🗂️', cat:'c-admin', cx:1230, cy:1140,
+    sub:'Forum-тему створено · Ольга отримала summary і посилання',
     when:'Після завершення анкети (GI)',
-    userCan:['(майстер) Переглянути summary відповідей','(майстер) Перейти в групу за invite link'],
+    userCan:['(Ольга) Переглянути summary відповідей Q1–Q5 у Forum-темі','(Ольга) Відповісти у темі'],
     next:['M2'],
-    state:'MASTER_NOTIFIED',
-    trigger:'GI: all intake questions answered',
-    condition:'consultation.status = WAITING_MASTER',
-    biz:'Система відправляє майстру (Ользі) сповіщення з: consultation_id, summary відповідей Q1–Q11, master_invite_link. Майстер переглядає анкету до входу в групу. Якщо не відреагував через [X] год → автонагадування.',
-    errors:['master_invite_link прострочений → регенерувати','Не підключився [X] год → автонагадування'],
-    repeat:'Повторне сповіщення якщо майстер не відреагував',
+    state:'TOPIC_CREATED',
+    trigger:'GI: all intake answered → createForumTopic API → thread_id отримано',
+    condition:'consultation.status = WAITING_EXPERT',
+    biz:'Бот викликає createForumTopic у Forum Supergroup → отримує thread_id. Зберігає consultation_id → thread_id mapping. Відправляє структурований summary в тему: тип тіла, що турбує, що пробувала, фото ✅. Надсилає Ользі push-сповіщення з deep link на тему. Якщо не відреагувала через [X] год → автонагадування.',
+    errors:['createForumTopic API failed → retry + fallback notification до адміна','thread_id не збережено → критична помилка'],
+    repeat:'Повторна відправка summary якщо Ольга не відреагувала',
     tgMsg:'',
     tgBtns:[],
-    tgHubMsg:'🔔 Нова консультація #C-2024-047\n\nВід: @username · 14:31\nСтатус: ⏳ Очікує підключення\n\n─────────────────\nТип: Щитоподібний\nТурбує: набряки після обгортання\nПробувала: стандартні протоколи\nФото: ✅ прикріплено\n─────────────────',
+    tgHubMsg:'🗂️ Нова консультація #C-2024-047\n\nВід: @username · 14:31\nСтатус: ⏳ Очікує відповіді\n\n─────────────────\nТип: 🦋 Щитоподібний\nТурбує: набряки після обгортання\nПробувала: стандартні протоколи\nФото: ✅ прикріплено\n─────────────────\n\n💬 Відповісти в темі →',
     isAdmin: true },
 
-  M2: { id:'M2', title:'Master Joins', icon:'👩‍💼', cat:'c-admin', cx:1230, cy:1600,
-    sub:'Ольга Русанова підключилась до групи',
-    when:'Майстер перейшов за master_invite_link',
-    userCan:['(майстер) Переглянути відповіді анкети','(майстер) Спілкуватись у групі','(майстер) Написати /finish після завершення'],
+  M2: { id:'M2', title:'Expert Active', icon:'👩‍💼', cat:'c-admin', cx:1230, cy:1300,
+    sub:'Ольга Русанова відповідає у Forum-темі',
+    when:'Ольга написала першу відповідь у Forum-темі',
+    userCan:['(Ольга) Відповісти на питання клієнта','(Ольга) Задати уточнення','(Ольга) Написати /finish для закриття'],
     next:['GC'],
-    state:'MASTER_IN_GROUP',
-    trigger:'Telegram webhook: new_chat_member = master_user_id',
-    condition:'master_invite_link використано, master_user_id = підтверджений ID майстра',
-    biz:'Бот виявляє вхід майстра → відправляє summary анкети у групу → consultation.status = ACTIVE. Якщо майстер зайшов до завершення анкети → попередження в групі. Неправильний user_id за master_invite → видалити.',
-    errors:['Майстер зайшов до завершення анкети → "⚠️ Анкета ще не завершена"','Невірний user_id → kick'],
-    repeat:'Вийшов і знову зайшов → продовжити консультацію',
+    state:'EXPERT_RESPONDING',
+    trigger:'Ольга пише повідомлення у Forum-темі → бот проксує до користувача в боті',
+    condition:'consultation.status = WAITING_EXPERT або ACTIVE, thread_id відомий',
+    biz:'Hub-proxy pattern: Ольга пише в Forum-темі → бот отримує повідомлення (за thread_id) → пересилає користувачу в приватний чат. Користувач відповідає в боті → бот пересилає в Forum-тему. Ізоляція: кожна консультація у своїй темі. Ольга не знає Telegram ID клієнта.',
+    errors:['Proxy failed → retry + notify admin','Forum topic недоступний → fallback до прямого повідомлення адміну'],
+    repeat:'Триває до /finish від Ольги',
     tgMsg:'',
     tgBtns:[],
-    tgHubMsg:'✅ Майстер підключився\n\nКонсультація #C-2024-047 активна\nОльга в групі · 15:02',
+    tgHubMsg:'💬 Відповідь від Ольги → клієнту\n\nКонсультація #C-2024-047 активна\nОльга відповіла · 15:02\n\n[Повідомлення проксується в бот]',
     isAdmin: true },
 
-  GC: { id:'GC', title:'Consultation Live', icon:'💬', cat:'c-active', cx:560, cy:1610,
-    sub:'Жива консультація — майстер і клієнт у групі',
-    when:'Майстер (M2) підключився до групи',
-    userCan:['Спілкуватись з майстром напряму','Надсилати фото та відео','Ставити уточнюючі питання'],
+  GC: { id:'GC', title:'Consultation Live', icon:'💬', cat:'c-active', cx:560, cy:1300,
+    sub:'Проксована консультація — бот пересилає повідомлення',
+    when:'Ольга написала відповідь у Forum-темі (M2) → бот доставив користувачу',
+    userCan:['Отримати відповідь від Ольги','Відправити уточнення','Надсилати фото та відео'],
     next:['GF'],
     state:'CONSULTATION_ACTIVE',
-    trigger:'M2: master_user_id joined → бот відправляє summary анкети в групу',
-    condition:'consultation.status = ACTIVE, обидва учасники в групі',
-    biz:'Бот надсилає структурований summary відповідей у групу для майстра. Далі — пряме спілкування без посередника (бот не проксує). Після завершення майстер пише /finish.',
-    errors:['Один з учасників вийшов → нагадування повернутись'],
-    repeat:'Консультація триває до /finish',
-    tgMsg:'Ольга підключилась до вашої групи 👩‍💼\n\nКонсультація розпочалась! Можете спілкуватись напряму.',
+    trigger:'M2: Ольга пише в Forum-темі → бот проксує повідомлення до користувача',
+    condition:'consultation.status = ACTIVE, thread_id ↔ user_id mapping збережено',
+    biz:'Hub-proxy в дії: Ольга (Forum topic) ↔ Бот ↔ Клієнт (приватний чат). Клієнт пише боту → бот пересилає в Forum-тему (thread_id). Ольга пише в тему → бот надсилає клієнту. Жоден учасник не бачить Telegram ID другого — приватність збережена. Після /finish від Ольги → GF.',
+    errors:['Клієнт заблокував бота → delivery_failed, повідомити Ольгу в темі','Forum topic видалено → критична помилка, логувати'],
+    repeat:'Триває до /finish від Ольги',
+    tgMsg:'💬 Ольга Русанова відповіла:\n\nПісля аналізу фото рекомендую протокол мультимаскінгу з детоксом для щитоподібного типу...\n\nМожете поставити уточнюючі питання 👇',
     tgBtns:[],
-    isGroup: true },
+    tgNote:'Бот проксує повідомлення: клієнт ↔ бот ↔ Forum Supergroup (тема #047)',
+    tgUserMsg:'Дякую! Чи можна робити цей протокол двічі на тиждень?' },
 
-  GF: { id:'GF', title:'Group Closed', icon:'🔒', cat:'c-removed', cx:560, cy:1770,
-    sub:'Консультація завершена — група в режимі читання',
-    when:'Майстер написав /finish',
-    userCan:['Переглянути архів консультації','Розпочати нову консультацію'],
+  GF: { id:'GF', title:'Consultation Closed', icon:'🔒', cat:'c-removed', cx:560, cy:1460,
+    sub:'Консультацію завершено — Forum-тему закрито',
+    when:'Ольга написала /finish у Forum-темі',
+    userCan:['Переглянути підсумок консультації','Розпочати нову консультацію'],
     next:['S2'],
     state:'COMPLETED',
-    trigger:'/finish від майстра (master_user_id) у групі',
+    trigger:'/finish від Ольги у Forum-темі → бот закриває консультацію',
     condition:'consultation.status = ACTIVE',
-    biz:'1. Група переводиться в read-only (прибираємо права писати для всіх крім бота). 2. consultation.status = COMPLETED. 3. Зберегти посилання на архів. 4. Відправити користувачу підсумкове повідомлення в бот. 5. Звільнити групу (не reuse — архів). Правило: 1 payment = 1 group, groups не повторюються.',
-    errors:['Бот не має прав змінити права групи → повідомити адміна'],
-    repeat:'COMPLETED — незмінний. Нова консультація = новий payment + нова група',
-    tgMsg:'Консультацію завершено 🔒\n\nДякуємо! Архів вашої консультації залишається в групі.\n\nХочете ще одну консультацію?',
+    biz:'1. consultation.status = COMPLETED. 2. Бот архівує Forum-тему (closeForumTopic API). 3. Надсилає підсумок користувачу в приватний чат. 4. Ольга отримує підтвердження закриття. Правило: 1 payment = 1 topic, topics не повторюються — зберігаються як архів.',
+    errors:['closeForumTopic failed → логувати + повідомити адміна','Клієнт недоступний → зберегти підсумок для наступного відкриття бота'],
+    repeat:'COMPLETED — незмінний. Нова консультація = новий payment + нова Forum-тема',
+    tgMsg:'Консультацію завершено 🔒\n\nДякуємо! Ольга завершила вашу консультацію.\n\nХочете ще одну консультацію?',
     tgBtns:['💬 Нова консультація'] },
 
   EXT1: { id:'EXT1', title:'Multimasking Academy Bot', icon:'🔗', cat:'c-external', cx:170, cy:530,
@@ -556,20 +527,18 @@ const CONNS = [
   { id:'S20-EXT2', from:'S20', to:'EXT2', label:'',              path:'M 950 416 L 950 494',                                   color:'#ea580c' },
   { id:'S10-S1',   from:'S10', to:'S1',   label:'назад',         path:'M 80 380 C 20 380 20 230 470 230',                      color:'#94a3b8', dashed:true },
   { id:'S20-S1',   from:'S20', to:'S1',   label:'назад',         path:'M 1040 380 C 1110 380 1110 230 650 230',                color:'#94a3b8', dashed:true },
-  // ── Group flow ──
-  { id:'S5-G1',    from:'S5',  to:'G1',   label:'',              path:'M 560 866 L 560 944',                                   color:'#94a3b8' },
-  { id:'G1-G2',    from:'G1',  to:'G2',   label:'',              path:'M 560 1016 L 560 1094',                                  color:'#94a3b8' },
-  { id:'G2-INT',   from:'G2',  to:'INT',  label:'',              path:'M 560 1166 L 560 1246',                                  color:'#9333ea' },
-  { id:'INT-GI',   from:'INT', to:'GI',   label:'Q5 ✓',          path:'M 560 1334 L 560 1424',                                  color:'#9333ea' },
-  { id:'INT-EDIAG',from:'INT', to:'EDIAG',label:'не знаю тип',   path:'M 440 1290 L 262 1290',                                  color:'#dc2626' },
-  { id:'EDIAG-INT',from:'EDIAG',to:'INT', label:'→ Q2',          path:'M 80 1290 C 20 1340 20 1380 440 1334',                  color:'#0284c7', dashed:true },
-  // ── Consultation ──
-  { id:'GI-GC',    from:'GI',  to:'GC',   label:'',              path:'M 560 1496 L 560 1574',                                  color:'#94a3b8' },
-  { id:'GI-M1',    from:'GI',  to:'M1',   label:'→ майстру',     path:'M 650 1460 L 1140 1460',                                 color:'#0d9488' },
-  { id:'M1-M2',    from:'M1',  to:'M2',   label:'',              path:'M 1230 1496 L 1230 1564',                                color:'#0d9488' },
-  { id:'M2-GC',    from:'M2',  to:'GC',   label:'приєднався',    path:'M 1140 1600 C 900 1600 700 1610 652 1610',               color:'#0d9488' },
-  { id:'GC-GF',    from:'GC',  to:'GF',   label:'/finish',       path:'M 560 1646 L 560 1734',                                  color:'#6b7280' },
-  { id:'GF-S2',    from:'GF',  to:'S2',   label:'нова консульт.', path:'M 470 1770 C 300 1770 300 380 470 380',                 color:'#6366f1', dashed:true },
+  // ── Intake & consultation flow ──
+  { id:'S5-INT',   from:'S5',  to:'INT',  label:'',              path:'M 560 866 L 560 936',                                   color:'#9333ea' },
+  { id:'INT-GI',   from:'INT', to:'GI',   label:'Q5 ✓',          path:'M 560 1024 L 560 1104',                                  color:'#9333ea' },
+  { id:'INT-EDIAG',from:'INT', to:'EDIAG',label:'не знаю тип',   path:'M 440 980 L 262 980',                                    color:'#dc2626' },
+  { id:'EDIAG-INT',from:'EDIAG',to:'INT', label:'→ Q2',          path:'M 80 980 C 20 1020 20 1060 440 1024',                   color:'#0284c7', dashed:true },
+  // ── Forum Supergroup & proxy ──
+  { id:'GI-GC',    from:'GI',  to:'GC',   label:'',              path:'M 560 1176 L 560 1264',                                  color:'#94a3b8' },
+  { id:'GI-M1',    from:'GI',  to:'M1',   label:'→ Forum',       path:'M 650 1140 L 1140 1140',                                 color:'#0d9488' },
+  { id:'M1-M2',    from:'M1',  to:'M2',   label:'',              path:'M 1230 1176 L 1230 1264',                                color:'#0d9488' },
+  { id:'M2-GC',    from:'M2',  to:'GC',   label:'відповідь',     path:'M 1140 1300 C 900 1300 700 1300 652 1300',               color:'#0d9488' },
+  { id:'GC-GF',    from:'GC',  to:'GF',   label:'/finish',       path:'M 560 1336 L 560 1424',                                  color:'#6b7280' },
+  { id:'GF-S2',    from:'GF',  to:'S2',   label:'нова консульт.', path:'M 470 1460 C 300 1460 300 380 470 380',                 color:'#6366f1', dashed:true },
 ];
 
 /* ─── JOURNEYS ───────────────────────────── */
@@ -578,16 +547,16 @@ const JOURNEYS = [
     nodes: Object.keys(NODES), conns: CONNS.map(c=>c.id) },
 
   { id:'happy',      label:'✅ Консультація',         color:'#16a34a',
-    nodes: ['S0','S1','S2','S3','S4','S5','G1','G2','INT','GI','GC','GF','M1','M2'],
-    conns: ['S0-S1','S1-S2','S2-S3','S3-S4','S4-S5','S5-G1','G1-G2','G2-INT','INT-GI','GI-GC','GI-M1','M1-M2','M2-GC','GC-GF'] },
+    nodes: ['S0','S1','S2','S3','S4','S5','INT','GI','GC','GF','M1','M2'],
+    conns: ['S0-S1','S1-S2','S2-S3','S3-S4','S4-S5','S5-INT','INT-GI','GI-GC','GI-M1','M1-M2','M2-GC','GC-GF'] },
 
-  { id:'master',     label:'👩‍💼 Master Flow',          color:'#0d9488',
+  { id:'master',     label:'👩‍💼 Forum & Proxy',        color:'#0d9488',
     nodes: ['GI','M1','M2','GC','GF'],
     conns: ['GI-M1','M1-M2','M2-GC','GC-GF'] },
 
-  { id:'diagnostic', label:'🔬 Діагностика (Q1=Ні)',  color:'#9333ea',
-    nodes: ['G2','INT','EDIAG'],
-    conns: ['G2-INT','INT-EDIAG','EDIAG-INT'] },
+  { id:'diagnostic', label:'🔬 Діагностика (Q1=?)',   color:'#9333ea',
+    nodes: ['INT','EDIAG'],
+    conns: ['INT-EDIAG','EDIAG-INT'] },
 
   { id:'redirect',   label:'🎓 Я проходив навчання',  color:'#0284c7',
     nodes: ['S0','S1','S10','EXT1'],
@@ -658,30 +627,23 @@ function buildAdminMock(n) {
   return `
     <div class="tg-wrap">
       <div class="tg-hdr-admin">
-        <div class="tg-avatar-admin">🔐</div>
+        <div class="tg-avatar-admin">${isM1 ? '🗂️' : '👩‍💼'}</div>
         <div>
-          <div class="tg-bot-name-admin">Master Notification</div>
-          <div class="tg-bot-sub-admin">${isM1 ? 'сповіщення для майстра' : 'підтвердження входу'}</div>
+          <div class="tg-bot-name-admin">Forum Supergroup · Тема #047</div>
+          <div class="tg-bot-sub-admin">${isM1 ? 'нова тема консультації створена' : 'Ольга відповідає у темі'}</div>
         </div>
       </div>
       <div class="tg-body">
-        <div class="tg-badge">${isM1 ? '🔔 Нова консультація' : '✅ Майстер підключився'}</div>
-        ${isM1 ? `
+        <div class="tg-badge">${isM1 ? '🗂️ Тему створено · createForumTopic' : '👩‍💼 Ольга відповіла'}</div>
         <div class="tg-bubble-wrap">
           <div class="tg-bubble-admin">
             <div class="tg-bubble-text" style="color:#d8dde5">${esc(msg)}</div>
-            <div class="tg-bubble-time" style="color:#0d9488">Бот · 14:31</div>
+            <div class="tg-bubble-time" style="color:#0d9488">${isM1 ? 'Бот · 14:31' : 'Ольга · 15:02'}</div>
           </div>
         </div>
-        <div class="tg-note" style="color:#0d9488;font-size:11px">🔗 Майстер переходить за master_invite_link</div>
-        ` : `
-        <div class="tg-forwarded">Консультація #C-2024-047 · відповідь надіслано</div>
-        <div class="tg-bubble-wrap">
-          <div class="tg-bubble-admin">
-            <div class="tg-bubble-text" style="color:#d8dde5">${esc(msg)}</div>
-            <div class="tg-bubble-time" style="color:#0d9488">15:02</div>
-          </div>
-        </div>`}
+        ${isM1
+          ? `<div class="tg-note" style="color:#0d9488;font-size:11px">🔗 Ольга переходить за посиланням на тему</div>`
+          : `<div class="tg-forwarded">Відповідь проксується → клієнту в приватний бот</div>`}
       </div>
     </div>`;
 }
@@ -713,7 +675,7 @@ function buildBodyTypeBotCard() {
         <span class="body-type-chip">✨ Збалансований</span>
       </div>
       <a class="ext-link-btn ext-link-btn-purple" href="https://t.me/body_type_bot" target="_blank">🔬 Відкрити body_type_bot →</a>
-      <div style="font-size:11px;color:#94a3b8">Після завершення → повернутись до групи → відповісти на Q2 з результатом</div>
+      <div style="font-size:11px;color:#94a3b8">Після завершення → повернутись до бота → відповісти на Q2 з результатом</div>
     </div>`;
 }
 
