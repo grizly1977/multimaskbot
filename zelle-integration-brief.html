@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4: Zelle & Gmail Integration — Developer Brief</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --bg4: #30363d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #6e7681;
+    --accent: #58a6ff;
+    --accent2: #1f6feb;
+    --green: #3fb950;
+    --green-bg: #0d2816;
+    --yellow: #d29922;
+    --yellow-bg: #2b1d0e;
+    --red: #f85149;
+    --red-bg: #2d0f0e;
+    --blue: #58a6ff;
+    --blue-bg: #0c1e38;
+    --purple: #bc8cff;
+    --purple-bg: #1e1038;
+    --orange: #f0883e;
+    --orange-bg: #2b1800;
+    --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(13,17,23,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 48px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+    margin-right: 24px;
+    flex-shrink: 0;
+  }
+
+  nav a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 12px;
+    padding: 0 10px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav a:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 24px 80px;
+  }
+
+  section {
+    margin-bottom: 80px;
+    scroll-margin-top: 60px;
+  }
+
+  /* ── HEADINGS ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  p { color: var(--text2); margin-bottom: 12px; }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .badge-pending  { background: var(--yellow-bg); color: var(--yellow); border: 1px solid #553b0f; }
+  .badge-matched  { background: var(--blue-bg);   color: var(--blue);   border: 1px solid #1e4070; }
+  .badge-processed{ background: var(--green-bg);  color: var(--green);  border: 1px solid #1a4a28; }
+  .badge-failed   { background: var(--red-bg);    color: var(--red);    border: 1px solid #5a2020; }
+  .badge-manual   { background: var(--purple-bg); color: var(--purple); border: 1px solid #4a2a70; }
+  .badge-info     { background: var(--bg3);       color: var(--text2);  border: 1px solid var(--border); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .card-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    background: var(--bg3);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg3); }
+
+  .field-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .field-type {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--orange);
+  }
+
+  /* ── CODE ── */
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--orange);
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  /* ── MERMAID ── */
+  .mermaid-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 48px 0 0;
+    margin-bottom: 64px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+
+  .meta-chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .hero-principle {
+    background: linear-gradient(135deg, #0c1e38, #1e1038);
+    border: 1px solid var(--accent2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-top: 24px;
+  }
+
+  .hero-principle .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .hero-principle p {
+    color: var(--text);
+    font-size: 15px;
+    margin: 0;
+  }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.8;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ── COMPONENT TABLE ── */
+  .component-row td:first-child { font-family: var(--mono); font-size: 12px; color: var(--green); }
+
+  /* ── STATUS LEGEND ── */
+  .status-legend {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  /* ── INDEX CARDS ── */
+  .index-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+  }
+  .index-card strong { color: var(--yellow); }
+
+  /* ── EDGE CASE CARDS ── */
+  .edge-category {
+    margin-bottom: 24px;
+  }
+
+  .edge-category h3 {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--yellow);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .edge-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+
+  .edge-situation {
+    padding: 10px 14px;
+    color: var(--text2);
+    font-size: 13px;
+    border-right: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .edge-behavior {
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 13px;
+    background: var(--bg3);
+  }
+
+  /* ── ENV TABLE ── */
+  .env-key { font-family: var(--mono); font-size: 12px; color: var(--green); }
+
+  /* ── ENDPOINT CARDS ── */
+  .endpoint-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .method {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    min-width: 44px;
+    text-align: center;
+  }
+  .method-get  { background: #0d2816; color: #3fb950; border: 1px solid #1a4a28; }
+  .method-post { background: #2b1800; color: #f0883e; border: 1px solid #5a3000; }
+
+  .endpoint-path {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .endpoint-desc {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  /* ── METRIC CARDS ── */
+  .metric-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .metric-name {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .metric-threshold {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--red);
+    background: var(--red-bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid #5a2020;
+  }
+
+  /* ── ROADMAP ── */
+  .roadmap-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-content {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    flex: 1;
+  }
+
+  .step-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  .step-desc { color: var(--text2); font-size: 13px; margin: 0; }
+
+  /* ── TEST GRID ── */
+  .test-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .test-item:last-child { border-bottom: none; }
+
+  .test-type {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .test-unit { background: #1e1038; color: var(--purple); border: 1px solid #4a2a70; }
+  .test-int  { background: var(--blue-bg); color: var(--blue); border: 1px solid #1e4070; }
+
+  /* ── INTEGRATION CARDS ── */
+  .integration-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .integration-title {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .kv-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+  }
+
+  .kv-key {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    min-width: 140px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .kv-val {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ NAV ══════════════════════════ -->
+<nav>
+  <div class="nav-brand">⚡ Phase 4</div>
+  <a href="#overview">Overview</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#data-models">Data Models</a>
+  <a href="#email-parsing">Email Parsing</a>
+  <a href="#main-flow">Main Flow</a>
+  <a href="#admin-flows">Admin Flows</a>
+  <a href="#reconciliation">Reconciliation</a>
+  <a href="#gmail-ops">Gmail Ops</a>
+  <a href="#edge-cases">Edge Cases</a>
+  <a href="#integrations">Integrations</a>
+  <a href="#env">ENV Vars</a>
+  <a href="#endpoints">API Endpoints</a>
+  <a href="#monitoring">Monitoring</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#testing">Testing</a>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<section id="overview" class="hero">
+  <div class="section-label">// phase 4 — developer brief</div>
+  <h1>Zelle & Gmail Integration</h1>
+  <div class="hero-meta">
+    <span class="meta-chip">📅 3 травня 2026</span>
+    <span class="meta-chip">v1.0</span>
+    <span class="meta-chip">Status: Draft</span>
+    <span class="meta-chip">Bank: Chase Business</span>
+  </div>
+
+  <p>Система автоматично обробляє вхідні Zelle-платежі через парсинг email-сповіщень від Chase Bank. Кожен платіж співставляється з клієнтом через базу алиасів та зараховується на баланс як стандартний top-up.</p>
+
+  <div class="hero-principle">
+    <div class="label">⚑ Ключовий принцип</div>
+    <p>Для решти системи (SPARK, баланс, webhooks) Zelle top-up <strong>нічим не відрізняється</strong> від карткового top-up. SPARK не знає що це Zelle — для нього це просто поповнення балансу.</p>
+  </div>
+
+  <div style="margin-top:32px;">
+    <h3 style="margin-bottom:16px; color: var(--text2); font-weight:500;">Компоненти системи</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Відповідальність</th>
+          </tr>
+        </thead>
+        <tbody class="component-row">
+          <tr><td>GmailAdapter</td><td>Підключення до Gmail, отримання нових листів, парсинг HTML від Chase</td></tr>
+          <tr><td>ZelleMatchingService</td><td>Alias lookup, матчинг sender_name → client_id</td></tr>
+          <tr><td>ZelleProcessingJob</td><td>Оркестрація: parse → match → top_up або create_ticket</td></tr>
+          <tr><td>ZelleReconciliationJob</td><td>Щоденна звірка з CSV</td></tr>
+          <tr><td>ZelleAdminController</td><td>API для адмін-інтерфейсу (pending list, reprocess, manual match)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ ARCHITECTURE ══════════════════════════ -->
+<section id="architecture">
+  <div class="section-label">// 2 — architecture</div>
+  <h2>Architecture: Adapter Pattern</h2>
+
+  <p>Обов'язково реалізувати через абстрактний adapter layer. Бізнес-логіка не знає звідки прийшли дані — це дає змогу в майбутньому замінити Gmail на Plaid без зміни логіки.</p>
+
+  <div class="mermaid-wrap" style="margin-bottom:20px;">
+    <pre class="mermaid">
+graph TD
+    Interface["<b>PaymentSourceAdapter</b> (Interface)
+    ─────────────────────────
+    fetch_transactions() → ZelleTransaction[]
+    mark_processed(tx_id)
+    get_raw_source(tx_id) → source_ref"]
+
+    Gmail["<b>GmailAdapter</b>
+    Phase 4
+    OAuth 2.0 + Pub/Sub"]
+
+    Plaid["<b>PlaidAdapter</b>
+    Phase 4+
+    Bank API"]
+
+    Interface --> Gmail
+    Interface --> Plaid
+
+    Gmail --> Job["<b>ZelleProcessingJob</b>"]
+    Plaid --> Job
+
+    Job --> Matching["<b>ZelleMatchingService</b>
+    alias lookup"]
+    Matching --> TopUp["BalanceService.top_up()"]
+    Matching --> Ticket["Zapier ticket creation"]
+    TopUp --> Webhook["balance.topped_up webhook → SPARK"]
+
+    style Interface fill:#1f2d45,stroke:#58a6ff,color:#e6edf3
+    style Gmail fill:#161b22,stroke:#3fb950,color:#e6edf3
+    style Plaid fill:#161b22,stroke:#30363d,color:#8b949e
+    style Job fill:#161b22,stroke:#58a6ff,color:#e6edf3
+    style Matching fill:#161b22,stroke:#d29922,color:#e6edf3
+    style TopUp fill:#0d2816,stroke:#3fb950,color:#3fb950
+    style Ticket fill:#2b1800,stroke:#f0883e,color:#f0883e
+    style Webhook fill:#0d2816,stroke:#3fb950,color:#3fb950
+    </pre>
+  </div>
+
+  <div class="card">
+    <p style="margin:0; color: var(--text2);">
+      <span style="color:var(--green);">●</span> Обидва адаптери повертають однаковий <code>ZelleTransaction</code> об'єкт.<br>
+      <span style="color:var(--text3);">●</span> <code>PlaidAdapter</code> — майбутня реалізація (Phase 4+). Зараз реалізуємо тільки <code>GmailAdapter</code>.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════ DATA MODELS ══════════════════════════ -->
+<section id="data-models">
+  <div class="section-label">// 3 — data models</div>
+  <h2>Data Models</h2>
+
+  <div class="status-legend">
+    <span style="color:var(--text2); font-size:12px; margin-right:4px;">status enum:</span>
+    <span class="badge badge-pending">pending</span>
+    <span class="badge badge-matched">matched</span>
+    <span class="badge badge-processed">processed</span>
+    <span class="badge badge-failed">failed</span>
+    <span class="badge badge-manual">manual</span>
+  </div>
+
+  <!-- ZelleTransaction -->
+  <h3 style="margin-bottom:12px;">ZelleTransaction <span class="badge badge-info">нова таблиця</span></h3>
+  <div class="table-wrap" style="margin-bottom:24px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Опис</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="field-name">id</span></td><td><span class="field-type">UUID</span></td><td>Primary Key</td></tr>
+        <tr><td><span class="field-name">zelle_transaction_id</span></td><td><span class="field-type">string UNIQUE</span></td><td>Transaction number з HTML тіла email Chase (поле «Transaction number») — <strong>головний ключ дедупликації</strong>. Приклад: <code>29078018871</code></td></tr>
+        <tr><td><span class="field-name">sender_name</span></td><td><span class="field-type">string</span></td><td>Ім'я відправника з email (до нормалізації)</td></tr>
+        <tr><td><span class="field-name">zelle_alias_name</span></td><td><span class="field-type">string nullable</span></td><td>Знайдений алиас після матчингу</td></tr>
+        <tr><td><span class="field-name">amount_cents</span></td><td><span class="field-type">integer</span></td><td>Сума в центах. $0 і від'ємні — відхиляються (status=failed)</td></tr>
+        <tr><td><span class="field-name">email_message_id</span></td><td><span class="field-type">string</span></td><td>Message-ID з email header — для аудиту та дедупликації push retries. Приклад: <code>&lt;701751780.2806034.1777844632345.JavaMail...&gt;</code></td></tr>
+        <tr><td><span class="field-name">chase_notification_id</span></td><td><span class="field-type">string</span></td><td>NOTIFICATION-ID header від Chase — унікальний ID Pub/Sub нотифікації. Корисно для debug retry-логіки. Приклад: <code>NOTIFICATION-84657_..._Zelle-4155-cdde943d...</code></td></tr>
+        <tr><td><span class="field-name">email_received_at</span></td><td><span class="field-type">datetime</span></td><td>Час отримання email — береться з <code>Date</code> header (не з «Sent on» в HTML). Приклад: <code>Sun, 3 May 2026 21:43:52 +0000</code></td></tr>
+        <tr>
+          <td><span class="field-name">status</span></td>
+          <td><span class="field-type">enum</span></td>
+          <td>
+            <span class="badge badge-pending">pending</span>
+            <span class="badge badge-matched">matched</span>
+            <span class="badge badge-processed">processed</span>
+            <span class="badge badge-failed">failed</span>
+            <span class="badge badge-manual">manual</span>
+          </td>
+        </tr>
+        <tr><td><span class="field-name">matched_client_id</span></td><td><span class="field-type">FK nullable</span></td><td>Клієнт до якого прив'язана транзакція</td></tr>
+        <tr><td><span class="field-name">ticket_number</span></td><td><span class="field-type">string nullable</span></td><td>Номер тікету в Zapier (якщо alias не знайдено)</td></tr>
+        <tr>
+          <td><span class="field-name">reconciliation_source</span></td>
+          <td><span class="field-type">enum nullable</span></td>
+          <td><code>email</code> | <code>csv</code> | <code>plaid</code> — звідки прийшла транзакція</td>
+        </tr>
+        <tr><td><span class="field-name">processed_at</span></td><td><span class="field-type">datetime nullable</span></td><td>Час зарахування на баланс</td></tr>
+        <tr><td><span class="field-name">error_message</span></td><td><span class="field-type">text nullable</span></td><td>Причина помилки якщо status=failed</td></tr>
+        <tr><td><span class="field-name">created_at</span></td><td><span class="field-type">datetime</span></td><td></td></tr>
+        <tr><td><span class="field-name">updated_at</span></td><td><span class="field-type">datetime</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:32px;">
+    <div class="index-card"><strong>UNIQUE</strong> zelle_transaction_id — дедупликація</div>
+    <div class="index-card"><strong>INDEX</strong> status — для адмін-інтерфейсу</div>
+    <div class="index-card"><strong>INDEX</strong> matched_client_id — для історії клієнта</div>
+  </div>
+
+  <!-- ZelleAlias -->
+  <h3 style="margin-bottom:12px;">ZelleAlias <span class="badge badge-info">існуюча таблиця</span></h3>
+  <div class="table-wrap" style="margin-bottom:16px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Опис</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="field-name">id</span></td><td><span class="field-type">UUID</span></td><td>Primary Key</td></tr>
+        <tr><td><span class="field-name">alias_name</span></td><td><span class="field-type">string</span></td><td>Ім'я/назва. Пошук case-insensitive з trim whitespace</td></tr>
+        <tr><td><span class="field-name">client_id</span></td><td><span class="field-type">FK</span></td><td>Клієнт-власник. Один alias → один client. Один client → багато aliases</td></tr>
+        <tr><td><span class="field-name">created_by</span></td><td><span class="field-type">FK</span></td><td>Адмін, який створив</td></tr>
+        <tr><td><span class="field-name">created_at</span></td><td><span class="field-type">datetime</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <p style="margin-bottom:8px; color:var(--text);">Приклад: клієнт <code>Sunrise Repairs Inc</code></p>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <span class="badge badge-info">"Sunrise Repairs Inc"</span>
+      <span class="badge badge-info">"Sunrise repairs. Inc"</span>
+      <span class="badge badge-info">"Jon Smith"</span>
+    </div>
+    <p style="margin-top:8px; margin-bottom:0; color:var(--text2);">Всі три alias_name вказують на один <code>client_id</code>. Alias унікальний — один alias не може вказувати на двох різних клієнтів.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════ EMAIL PARSING ══════════════════════════ -->
+<section id="email-parsing">
+  <div class="section-label">// 3.5 — email parsing</div>
+  <h2>Email Parsing: Chase Zelle Notification</h2>
+
+  <p>Система отримує HTML email від Chase і парсить з нього 6 полів. Нижче — реальний приклад email та точне пояснення що і звідки братиметься.</p>
+
+  <!-- STEP 1: Detection -->
+  <h3 style="margin-bottom:12px; margin-top:28px;">Крок 1 — Фільтр: чи це Zelle-платіж?</h3>
+  <div class="card" style="margin-bottom:28px;">
+    <p style="margin-bottom:12px; color:var(--text);">Перевірити <strong>Subject</strong> заголовок email. Якщо точний збіг — обробляти. Якщо ні — ігнорувати.</p>
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <span style="font-family:var(--mono); font-size:11px; color:var(--text3);">Subject header:</span>
+      <code style="font-size:13px; background:var(--green-bg); color:var(--green); border:1px solid #1a4a28; padding:6px 14px;">You received money with Zelle®</code>
+    </div>
+    <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+      <p style="margin:0; color:var(--text2); font-size:13px;">
+        <strong style="color:var(--yellow);">⚠ Зверни увагу:</strong> Інші Chase emails (баланс, виписки, refund-повідомлення) мають інший Subject і будуть відфільтровані автоматично. Додатково перевірити що <code>From</code> містить <code>@chase.com</code> для безпеки.
+      </p>
+    </div>
+  </div>
+
+  <!-- STEP 2: Visual email + callouts -->
+  <h3 style="margin-bottom:16px;">Крок 2 — Що парсити з email</h3>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; align-items:start;">
+
+    <!-- Left: visual email replica -->
+    <div>
+      <p style="font-size:12px; color:var(--text3); margin-bottom:10px; font-family:var(--mono);">// візуальний вигляд email</p>
+
+      <div style="background:#d7dbe0; border-radius:10px; padding:12px; font-family:Arial,sans-serif;">
+        <div style="background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.15);">
+
+          <!-- Chase blue header -->
+          <div style="background:#005EB8; padding:20px 28px 0; position:relative;">
+            <div style="background:#fff; border-radius:4px 4px 0 0; padding:18px 24px 24px;">
+              <!-- Chase logo text -->
+              <div style="font-size:18px; font-weight:900; color:#000; letter-spacing:-0.5px; margin-bottom:16px;">CHASE <span style="color:#005EB8; font-size:22px;">◎</span></div>
+
+              <!-- Pill -->
+              <div style="display:inline-block; background:#D7DBE0; border-radius:20px; padding:4px 12px; font-size:11px; font-weight:bold; color:#000; margin-bottom:16px;">Zelle<sup>®</sup> payment</div>
+
+              <!-- H1 with callout 1 -->
+              <div style="position:relative;">
+                <div style="position:absolute; left:-36px; top:50%; transform:translateY(-50%);">
+                  <span style="background:#f85149; color:#fff; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono);">1</span>
+                </div>
+                <h1 style="font-size:24px; font-weight:900; color:#414042; margin:0; line-height:1.2; border:2px solid #f85149; border-radius:4px; padding:4px 8px; display:inline-block;">HONEST REPAIR LLC sent you money</h1>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div style="padding:20px 24px; background:#fff;">
+            <p style="color:#414042; font-size:14px; margin-bottom:16px;">Here are the details:</p>
+
+            <table style="width:90%; border-collapse:collapse;">
+              <!-- Amount -->
+              <tr style="position:relative;">
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042;">Amount</td>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042; font-weight:bold; text-align:right; position:relative;">
+                  <span style="border:2px solid #3fb950; border-radius:3px; padding:1px 6px;">$10.00</span>
+                  <span style="position:absolute; right:-28px; top:50%; transform:translateY(-50%); background:#3fb950; color:#fff; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:monospace;">2</span>
+                </td>
+              </tr>
+              <!-- Sent on -->
+              <tr>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042;">Sent on</td>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042; font-weight:bold; text-align:right; color:#8b949e;">May 03, 2026 <span style="font-size:10px; background:#2b1d0e; color:#d29922; padding:1px 5px; border-radius:3px; margin-left:4px;">ignored</span></td>
+              </tr>
+              <!-- Transaction number -->
+              <tr>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042;">Transaction number</td>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042; font-weight:bold; text-align:right; position:relative;">
+                  <span style="border:2px solid #58a6ff; border-radius:3px; padding:1px 6px;">29078018871</span>
+                  <span style="position:absolute; right:-28px; top:50%; transform:translateY(-50%); background:#58a6ff; color:#000; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:monospace;">3</span>
+                </td>
+              </tr>
+              <!-- Memo -->
+              <tr>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042;">Memo</td>
+                <td style="padding:10px 0 6px; font-size:14px; color:#414042; border-bottom:1px solid #414042; font-weight:bold; text-align:right; color:#8b949e;">marketing <span style="font-size:10px; background:#2b1d0e; color:#d29922; padding:1px 5px; border-radius:3px; margin-left:4px;">ignored</span></td>
+              </tr>
+            </table>
+
+            <!-- Hidden header fields note -->
+            <div style="margin-top:20px; background:#0d1117; border-radius:6px; padding:12px 14px; border:1px solid #30363d;">
+              <p style="font-size:11px; color:#6e7681; font-family:monospace; margin-bottom:8px;">// email headers (не видно в UI)</p>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span style="background:#bc8cff; color:#0d1117; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:monospace; flex-shrink:0;">4</span>
+                <span style="font-size:11px; color:#8b949e; font-family:monospace;"><span style="color:#6e7681;">Date:</span> Sun, 3 May 2026 21:43:52 +0000</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span style="background:#f0883e; color:#0d1117; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:monospace; flex-shrink:0;">5</span>
+                <span style="font-size:11px; color:#8b949e; font-family:monospace; word-break:break-all;"><span style="color:#6e7681;">Message-ID:</span> &lt;701751780.2806034.1777844632345...&gt;</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:#d29922; color:#0d1117; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:monospace; flex-shrink:0;">6</span>
+                <span style="font-size:11px; color:#8b949e; font-family:monospace; word-break:break-all;"><span style="color:#6e7681;">NOTIFICATION-ID:</span> NOTIFICATION-84657_..._Zelle-4155-cdde943d...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: field extraction table -->
+    <div>
+      <p style="font-size:12px; color:var(--text3); margin-bottom:10px; font-family:var(--mono);">// що і звідки парсити</p>
+
+      <!-- Field 1 -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-left:3px solid #f85149; border-radius:6px; padding:14px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#f85149; color:#fff; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); flex-shrink:0;">1</span>
+          <span class="field-name" style="font-size:13px;">sender_name</span>
+          <span class="badge badge-info">DB field</span>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Де:</strong> HTML тіло — тег <code>&lt;h1&gt;</code></div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Raw:</strong> <code>"HONEST REPAIR LLC sent you money"</code></div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Парсинг:</strong> Відрізати суфікс <code>" sent you money"</code> (завжди незмінний)</div>
+        <div style="font-size:12px; color:var(--text2);"><strong style="color:var(--text3);">Результат:</strong> <code style="color:var(--green);">"HONEST REPAIR LLC"</code></div>
+      </div>
+
+      <!-- Field 2 -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-left:3px solid #3fb950; border-radius:6px; padding:14px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#3fb950; color:#000; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); flex-shrink:0;">2</span>
+          <span class="field-name" style="font-size:13px;">amount_cents</span>
+          <span class="badge badge-info">DB field</span>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Де:</strong> HTML таблиця, рядок з лейблом <code>"Amount"</code>, права колонка</div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Raw:</strong> <code>"$10.00"</code></div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Парсинг:</strong> Видалити <code>$</code>, parseFloat, × 100, round → integer</div>
+        <div style="font-size:12px; color:var(--text2);"><strong style="color:var(--text3);">Результат:</strong> <code style="color:var(--green);">1000</code> (центи)</div>
+      </div>
+
+      <!-- Field 3 -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-left:3px solid #58a6ff; border-radius:6px; padding:14px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#58a6ff; color:#000; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); flex-shrink:0;">3</span>
+          <span class="field-name" style="font-size:13px;">zelle_transaction_id</span>
+          <span class="badge badge-info">DB field</span>
+          <span class="badge badge-matched" style="font-size:10px;">UNIQUE</span>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Де:</strong> HTML таблиця, рядок <code>"Transaction number"</code>, права колонка</div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Raw:</strong> <code>"29078018871"</code></div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Парсинг:</strong> Взяти як є (string). Використовується для дедупликації та reconciliation з CSV</div>
+        <div style="font-size:12px; color:var(--text2);"><strong style="color:var(--text3);">Результат:</strong> <code style="color:var(--green);">"29078018871"</code></div>
+      </div>
+
+      <!-- Field 4 -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-left:3px solid #bc8cff; border-radius:6px; padding:14px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#bc8cff; color:#0d1117; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); flex-shrink:0;">4</span>
+          <span class="field-name" style="font-size:13px;">email_received_at</span>
+          <span class="badge badge-info">DB field</span>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Де:</strong> Email header <code>Date:</code> (НЕ з поля «Sent on» в HTML — там немає часу)</div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Raw:</strong> <code>"Sun, 3 May 2026 21:43:52 +0000 (UTC)"</code></div>
+        <div style="font-size:12px; color:var(--text2);"><strong style="color:var(--text3);">Парсинг:</strong> Парсити як RFC 2822 datetime → UTC</div>
+      </div>
+
+      <!-- Field 5 -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-left:3px solid #f0883e; border-radius:6px; padding:14px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#f0883e; color:#0d1117; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); flex-shrink:0;">5</span>
+          <span class="field-name" style="font-size:13px;">email_message_id</span>
+          <span class="badge badge-info">DB field</span>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Де:</strong> Email header <code>Message-ID:</code></div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Raw:</strong> <code>&lt;701751780.2806034.1777844632345.JavaMail.webuser@iaasn00692056&gt;</code></div>
+        <div style="font-size:12px; color:var(--text2);"><strong style="color:var(--text3);">Використання:</strong> Аудит + дедупликація Pub/Sub push retries (той самий лист = той самий Message-ID)</div>
+      </div>
+
+      <!-- Field 6 -->
+      <div style="background:var(--bg2); border:1px solid var(--border); border-left:3px solid #d29922; border-radius:6px; padding:14px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="background:#d29922; color:#0d1117; font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); flex-shrink:0;">6</span>
+          <span class="field-name" style="font-size:13px;">chase_notification_id</span>
+          <span class="badge badge-info">DB field</span>
+        </div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Де:</strong> Email header <code>NOTIFICATION-ID:</code></div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px;"><strong style="color:var(--text3);">Raw:</strong> <code style="font-size:10px;">NOTIFICATION-84657_digital-pymt-comm-service_..._Zelle-4155-cdde943d-5ef9-3a30-a2f5-f27582abe6ec</code></div>
+        <div style="font-size:12px; color:var(--text2);"><strong style="color:var(--text3);">Використання:</strong> Debug Pub/Sub retry-логіки. Зберігати як є (string)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Sender name normalization -->
+  <h3 style="margin-top:32px; margin-bottom:12px;">Крок 3 — Нормалізація sender_name перед matching</h3>
+  <div class="card" style="margin-bottom:24px;">
+    <p style="color:var(--text); margin-bottom:16px;">Після парсингу з <code>&lt;h1&gt;</code> — виконати нормалізацію перед пошуком в ZelleAlias:</p>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-family:var(--mono); font-size:11px; color:var(--text3); min-width:20px;">1.</span>
+        <span style="font-size:13px; color:var(--text2);">Відрізати <code>" sent you money"</code> суфікс з кінця рядка</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-family:var(--mono); font-size:11px; color:var(--text3); min-width:20px;">2.</span>
+        <span style="font-size:13px; color:var(--text2);"><code>.trim()</code> — видалити пробіли з початку і кінця</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-family:var(--mono); font-size:11px; color:var(--text3); min-width:20px;">3.</span>
+        <span style="font-size:13px; color:var(--text2);"><code>.toLowerCase()</code> — порівняння з alias завжди case-insensitive</span>
+      </div>
+    </div>
+    <div style="margin-top:16px; background:var(--bg3); border-radius:6px; padding:12px 16px; font-family:var(--mono); font-size:12px;">
+      <span style="color:var(--text3);">// приклад</span><br>
+      <span style="color:var(--text2);">"HONEST REPAIR LLC sent you money"</span><br>
+      <span style="color:var(--text3);">→ strip suffix →</span> <span style="color:var(--yellow);">"HONEST REPAIR LLC"</span><br>
+      <span style="color:var(--text3);">→ trim →</span> <span style="color:var(--yellow);">"HONEST REPAIR LLC"</span><br>
+      <span style="color:var(--text3);">→ lowercase →</span> <span style="color:var(--green);">"honest repair llc"</span> <span style="color:var(--text3);">← порівнюється з alias DB</span>
+    </div>
+  </div>
+
+  <!-- STEP 4: Technical notes -->
+  <h3 style="margin-bottom:12px;">Технічні нюанси HTML парсингу</h3>
+  <div class="card-grid card-grid-2">
+    <div class="card">
+      <h3 style="font-size:13px; color:var(--yellow); margin-bottom:10px;">Quoted-Printable encoding</h3>
+      <p style="font-size:13px;">Email тіло закодовано у <code>quoted-printable</code>. Перед парсингом HTML необхідно декодувати:</p>
+      <div style="background:var(--bg3); border-radius:6px; padding:10px 14px; font-family:var(--mono); font-size:11px; margin-top:10px;">
+        <span style="color:var(--text3);">encoded:</span> <span style="color:var(--red);">=3D</span> → <span style="color:var(--green);">=</span><br>
+        <span style="color:var(--text3);">encoded:</span> <span style="color:var(--red);">=C2=AE</span> → <span style="color:var(--green);">®</span><br>
+        <span style="color:var(--text3);">line wrap:</span> <span style="color:var(--red);">рядок що закінчується на =</span> → <span style="color:var(--green);">об'єднати з наступним</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:13px; color:var(--yellow); margin-bottom:10px;">Що ігнорувати</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge badge-pending" style="flex-shrink:0;">ignored</span>
+          <span style="font-size:13px; color:var(--text2);">Рядок <strong>"Sent on"</strong> — дата є в email header <code>Date:</code> з часом</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge badge-pending" style="flex-shrink:0;">ignored</span>
+          <span style="font-size:13px; color:var(--text2);">Рядок <strong>"Memo"</strong> — не використовується для matching взагалі</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge badge-pending" style="flex-shrink:0;">ignored</span>
+          <span style="font-size:13px; color:var(--text2);">Весь footer (disclaimer, посилання, "Go to Zelle" кнопка)</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge badge-pending" style="flex-shrink:0;">ignored</span>
+          <span style="font-size:13px; color:var(--text2);">Текст-підтвердження внизу: <em>"HONEST REPAIR LLC is registered with a Zelle® member bank..."</em></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary table -->
+  <h3 style="margin-top:28px; margin-bottom:12px;">Зведена таблиця: всі поля</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>DB Field</th>
+          <th>Джерело</th>
+          <th>Raw value (приклад)</th>
+          <th>Parsed value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="background:#f85149; color:#fff; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">1</span></td>
+          <td><span class="field-name">sender_name</span></td>
+          <td>HTML <code>&lt;h1&gt;</code> — strip " sent you money"</td>
+          <td><code>"HONEST REPAIR LLC sent you money"</code></td>
+          <td><code style="color:var(--green);">"HONEST REPAIR LLC"</code></td>
+        </tr>
+        <tr>
+          <td><span style="background:#3fb950; color:#000; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">2</span></td>
+          <td><span class="field-name">amount_cents</span></td>
+          <td>HTML таблиця → рядок "Amount"</td>
+          <td><code>"$10.00"</code></td>
+          <td><code style="color:var(--green);">1000</code></td>
+        </tr>
+        <tr>
+          <td><span style="background:#58a6ff; color:#000; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">3</span></td>
+          <td><span class="field-name">zelle_transaction_id</span></td>
+          <td>HTML таблиця → рядок "Transaction number"</td>
+          <td><code>"29078018871"</code></td>
+          <td><code style="color:var(--green);">"29078018871"</code></td>
+        </tr>
+        <tr>
+          <td><span style="background:#bc8cff; color:#0d1117; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">4</span></td>
+          <td><span class="field-name">email_received_at</span></td>
+          <td>Email header <code>Date:</code></td>
+          <td><code>"Sun, 3 May 2026 21:43:52 +0000"</code></td>
+          <td><code style="color:var(--green);">2026-05-03T21:43:52Z</code></td>
+        </tr>
+        <tr>
+          <td><span style="background:#f0883e; color:#0d1117; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">5</span></td>
+          <td><span class="field-name">email_message_id</span></td>
+          <td>Email header <code>Message-ID:</code></td>
+          <td><code style="font-size:10px;">&lt;701751780.2806034...JavaMail...&gt;</code></td>
+          <td><code style="color:var(--green);">зберігати як є</code></td>
+        </tr>
+        <tr>
+          <td><span style="background:#d29922; color:#0d1117; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">6</span></td>
+          <td><span class="field-name">chase_notification_id</span></td>
+          <td>Email header <code>NOTIFICATION-ID:</code></td>
+          <td><code style="font-size:10px;">NOTIFICATION-84657_..._Zelle-4155-cdde943d...</code></td>
+          <td><code style="color:var(--green);">зберігати як є</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════ MAIN FLOW ══════════════════════════ -->
+<section id="main-flow">
+  <div class="section-label">// 4 — main flow</div>
+  <h2>Main Flow: Email → Balance Top-Up</h2>
+
+  <p>Real-time trigger через Gmail Pub/Sub. Latency — секунди від отримання email.</p>
+
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+flowchart TD
+    A(["📨 Gmail Pub/Sub Push\n(POST /webhooks/gmail/push)"]) --> B["Fetch full email\nby historyId via Gmail API"]
+    B --> C{{"Це Chase Zelle\nnotification?"}}
+    C -->|НІ| D(["🚫 Ignore"])
+    C -->|ТАК| E["Parse email:\n• sender_name\n• amount_cents\n• zelle_tx_id"]
+
+    E --> F{{"zelle_tx_id\nвже в базі?"}}
+    F -->|ТАК| G(["⏭ Skip\n(duplicate)"])
+    F -->|НІ| H["CREATE ZelleTransaction\nstatus = pending"]
+
+    H --> I["Alias matching:\nlookup sender_name\nв ZelleAlias (case-insensitive)"]
+
+    I -->|FOUND| J["status = matched\nset matched_client_id"]
+    I -->|NOT FOUND| K["CREATE Zapier ticket\nSave ticket_number\nstatus = pending\n⏸ STOP — wait for admin"]
+
+    J --> L["BalanceService.top_up\nclient_id, amount, metadata"]
+    L --> M["status = processed\nprocessed_at = now()"]
+    M --> N["Publish balance.topped_up\nwebhook → SPARK"]
+    N --> O["Mark email as Read\nMove to 'Processed' folder"]
+
+    style A fill:#1f2d45,stroke:#58a6ff,color:#e6edf3
+    style D fill:#2d0f0e,stroke:#f85149,color:#f85149
+    style G fill:#2d0f0e,stroke:#f85149,color:#f85149
+    style H fill:#21262d,stroke:#d29922,color:#d29922
+    style K fill:#2b1800,stroke:#f0883e,color:#f0883e
+    style J fill:#0c1e38,stroke:#58a6ff,color:#58a6ff
+    style M fill:#0d2816,stroke:#3fb950,color:#3fb950
+    style N fill:#0d2816,stroke:#3fb950,color:#3fb950
+    style O fill:#0d2816,stroke:#3fb950,color:#3fb950
+    </pre>
+  </div>
+</section>
+
+<!-- ══════════════════════════ ADMIN FLOWS ══════════════════════════ -->
+<section id="admin-flows">
+  <div class="section-label">// 5 — admin flows</div>
+  <h2>Admin Flows</h2>
+
+  <div class="card-grid card-grid-2" style="margin-bottom:8px;">
+    <div>
+      <h3 style="margin-bottom:12px;">Reprocess Flow</h3>
+      <p style="margin-bottom:16px;">Адмін додав alias раніше і натискає "Reprocess" для конкретної транзакції.</p>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TD
+    A["Admin: Pending Transactions page"] --> B["Бачить список\nunmatched транзакцій"]
+    B --> C["Натискає\n[Reprocess]"]
+    C --> D["Re-run alias matching\nдля цієї транзакції"]
+    D -->|FOUND| E["→ Standard top-up flow"]
+    D -->|STILL NOT FOUND| F["Show error\nKeep pending"]
+
+    style E fill:#0d2816,stroke:#3fb950,color:#3fb950
+    style F fill:#2d0f0e,stroke:#f85149,color:#f85149
+        </pre>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:12px;">Manual Match Flow</h3>
+      <p style="margin-bottom:16px;">Адмін вручну прив'язує транзакцію до клієнта.</p>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TD
+    A["Admin вибирає\npending транзакцію"] --> B["Шукає клієнта\nза name/ID"]
+    B --> C["Підтверджує:\n'Match $200 from Jon Smith\nto Client #45 Sunrise Repairs'"]
+    C --> D{{"Add 'Jon Smith' as alias\nfor Sunrise Repairs?"}}
+    D -->|YES| E["CREATE ZelleAlias"]
+    D -->|NO| F["Skip alias creation"]
+    E --> G["Execute top_up\nstatus = manual\nprocessed_at = now()"]
+    F --> G
+
+    style E fill:#1e1038,stroke:#bc8cff,color:#bc8cff
+    style G fill:#0d2816,stroke:#3fb950,color:#3fb950
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <p style="margin:0;"><strong style="color:var(--yellow);">⚠ Важливо:</strong> <span style="color:var(--text2);">Закриття Zapier тікету <strong>НЕ</strong> тригерить автоматичну обробку. Тільки кнопка "Reprocess" або "Manual Match" в адмін-інтерфейсі.</span></p>
+  </div>
+</section>
+
+<!-- ══════════════════════════ RECONCILIATION ══════════════════════════ -->
+<section id="reconciliation">
+  <div class="section-label">// 6 — reconciliation</div>
+  <h2>Reconciliation Flow (Daily/Weekly)</h2>
+
+  <p>Щоденна звірка з банківським CSV. У майбутньому CSV замінюється на Plaid API. Конфігурується через <code>ZELLE_RECONCILIATION_CRON</code> (default: <code>0 8 * * *</code> — 8:00 щодня).</p>
+
+  <div class="mermaid-wrap">
+    <pre class="mermaid">
+flowchart TD
+    A(["⏰ ZelleReconciliationJob\ncron trigger"]) --> B["Admin uploads CSV\n(або майбутній Plaid pull)"]
+    B --> C["Parse CSV:\nextract Zelle incoming transactions"]
+    C --> D["For each transaction in CSV:"]
+    D --> E{{"zelle_tx_id\nє в ZelleTransaction?"}}
+
+    E -->|ТАК — існує| F["Verify amounts match"]
+    F -->|✓ OK| G(["✅ All good"])
+    F -->|✗ Mismatch| H["🚨 Flag discrepancy\nAdmin alert"]
+
+    E -->|НІ — пропущена| I["CREATE ZelleTransaction\nsource = csv"]
+    I --> J["Run alias matching\n(як нова транзакція)"]
+    J -->|FOUND| K["Auto top-up"]
+    J -->|NOT FOUND| L["Create ticket\nstatus = pending"]
+
+    style A fill:#1f2d45,stroke:#58a6ff,color:#e6edf3
+    style G fill:#0d2816,stroke:#3fb950,color:#3fb950
+    style H fill:#2d0f0e,stroke:#f85149,color:#f85149
+    style K fill:#0d2816,stroke:#3fb950,color:#3fb950
+    style L fill:#2b1800,stroke:#f0883e,color:#f0883e
+    </pre>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <p style="margin:0; color:var(--text2);">
+      <strong style="color:var(--orange);">Відмінність від основного flow:</strong> Якщо CSV знаходить транзакцію якої немає в системі → <strong>одразу alias matching, без тікету</strong>. Тікет створюється тільки якщо alias не знайдено.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════ GMAIL OPS ══════════════════════════ -->
+<section id="gmail-ops">
+  <div class="section-label">// 7 — gmail operations</div>
+  <h2>Gmail Watch Renewal & Fallback Polling</h2>
+
+  <div class="card-grid card-grid-2">
+    <div>
+      <h3 style="margin-bottom:12px;">Watch Renewal</h3>
+      <p style="margin-bottom:16px;">Gmail Watch expires кожні 7 днів. Cron оновлює кожні 6 днів з запасом.</p>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TD
+    A(["⏰ Cron: кожні 6 днів"]) --> B["Gmail API:\nusers.watch\ntopicName = PUB_SUB_TOPIC\nlabel = INBOX"]
+    B --> C["Update stored\nwatch expiration\ntimestamp"]
+
+    style A fill:#1f2d45,stroke:#58a6ff,color:#e6edf3
+    style C fill:#0d2816,stroke:#3fb950,color:#3fb950
+        </pre>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:12px;">Fallback Polling</h3>
+      <p style="margin-bottom:16px;">Страховка якщо Pub/Sub push не дійшов. Перевіряє кожні 5 хвилин.</p>
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TD
+    A(["⏰ Cron: кожні 5 хвилин"]) --> B{{"Last push notification\n< 10 хвилин тому?"}}
+    B -->|ТАК — push alive| C(["⏭ Skip"])
+    B -->|НІ — push down| D["Poll Gmail API:\nlist messages after\nlast_processed_timestamp"]
+    D --> E["Process each message\n→ Main Flow (4.1)"]
+
+    style A fill:#1f2d45,stroke:#58a6ff,color:#e6edf3
+    style C fill:#21262d,stroke:#30363d,color:#8b949e
+    style E fill:#0d2816,stroke:#3fb950,color:#3fb950
+        </pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ EDGE CASES ══════════════════════════ -->
+<section id="edge-cases">
+  <div class="section-label">// 8 — edge cases</div>
+  <h2>Edge Cases</h2>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; font-size:12px; font-family:var(--mono); color:var(--text2); margin-bottom:16px; background:var(--bg3); border-radius:6px; padding:8px 12px; border: 1px solid var(--border);">
+    <span>SITUATION</span><span>BEHAVIOR</span>
+  </div>
+
+  <!-- 5.1 -->
+  <div class="edge-category">
+    <h3>🔁 Дублікати</h3>
+    <div class="edge-row"><div class="edge-situation">Той самий email прийшов двічі (push retry)</div><div class="edge-behavior">Dedup по <code>email_message_id</code> → skip</div></div>
+    <div class="edge-row"><div class="edge-situation">Інший email з тим самим Zelle TX ID</div><div class="edge-behavior">Dedup по <code>zelle_tx_id</code> → skip</div></div>
+  </div>
+
+  <!-- 5.2 -->
+  <div class="edge-category">
+    <h3>📧 Невірний формат email</h3>
+    <div class="edge-row"><div class="edge-situation">Email від Chase але не Zelle (інше сповіщення)</div><div class="edge-behavior">Filter на етапі "is this Zelle?" → ignore</div></div>
+    <div class="edge-row"><div class="edge-situation">Zelle email але не вдалось розпарсити</div><div class="edge-behavior"><span class="badge badge-failed">failed</span> + <code>error_message="parse_error"</code> + admin alert</div></div>
+    <div class="edge-row"><div class="edge-situation">Amount = $0 або негативне</div><div class="edge-behavior"><span class="badge badge-failed">failed</span> + <code>error="invalid_amount"</code></div></div>
+  </div>
+
+  <!-- 5.3 -->
+  <div class="edge-category">
+    <h3>🔍 Alias matching</h3>
+    <div class="edge-row"><div class="edge-situation">Sender name точно відповідає alias</div><div class="edge-behavior">Match → process ✓</div></div>
+    <div class="edge-row"><div class="edge-situation">"JON SMITH" vs "Jon Smith"</div><div class="edge-behavior">Case-insensitive matching → match ✓</div></div>
+    <div class="edge-row"><div class="edge-situation">Sender name з зайвими пробілами</div><div class="edge-behavior">Trim + normalize → match ✓</div></div>
+    <div class="edge-row"><div class="edge-situation">Sender name не знайдено в alias DB</div><div class="edge-behavior"><span class="badge badge-pending">pending</span> + Zapier ticket</div></div>
+    <div class="edge-row"><div class="edge-situation">Sender name відповідає двом клієнтам</div><div class="edge-behavior"><strong>Неможливо</strong> — alias унікальний, один alias → один client</div></div>
+  </div>
+
+  <!-- 5.4 -->
+  <div class="edge-category">
+    <h3>📡 Gmail / Network issues</h3>
+    <div class="edge-row"><div class="edge-situation">Pub/Sub push не дійшов</div><div class="edge-behavior">Fallback polling підхопить через 5 хвилин</div></div>
+    <div class="edge-row"><div class="edge-situation">Gmail API тимчасово недоступний</div><div class="edge-behavior">Retry з exponential backoff (3 спроби)</div></div>
+    <div class="edge-row"><div class="edge-situation">OAuth token expired</div><div class="edge-behavior">Auto-refresh через refresh token</div></div>
+    <div class="edge-row"><div class="edge-situation">Gmail Watch expired (не оновили)</div><div class="edge-behavior">Fallback polling працює + admin alert</div></div>
+  </div>
+
+  <!-- 5.5 -->
+  <div class="edge-category">
+    <h3>⚡ Processing failures</h3>
+    <div class="edge-row"><div class="edge-situation">Alias знайдено але top_up failed (DB error)</div><div class="edge-behavior"><span class="badge badge-failed">failed</span> + retry через 1 хв (max 3 retries)</div></div>
+    <div class="edge-row"><div class="edge-situation">Zapier ticket creation failed</div><div class="edge-behavior">Log error + транзакція лишається <span class="badge badge-pending">pending</span> + admin alert</div></div>
+    <div class="edge-row"><div class="edge-situation">Reconciliation CSV з некоректним форматом</div><div class="edge-behavior">Abort reconciliation + admin alert + log error</div></div>
+  </div>
+
+  <!-- 5.6 -->
+  <div class="edge-category">
+    <h3>💸 Refunds & Chargebacks</h3>
+    <div class="edge-row"><div class="edge-situation">Email від Chase про cancellation/refund</div><div class="edge-behavior"><strong>Ігнорувати повністю</strong> — не парсити</div></div>
+    <div class="edge-row"><div class="edge-situation">Chargeback</div><div class="edge-behavior">Ручна обробка: адмін блокує/суспендить акаунт</div></div>
+  </div>
+
+  <!-- 5.7 -->
+  <div class="edge-category">
+    <h3>📊 Reconciliation mismatches</h3>
+    <div class="edge-row"><div class="edge-situation">CSV транзакція відсутня в системі</div><div class="edge-behavior">Auto alias matching (нова транзакція, source=csv)</div></div>
+    <div class="edge-row"><div class="edge-situation">Сума в системі ≠ сума в CSV</div><div class="edge-behavior">Flag as discrepancy → admin alert</div></div>
+    <div class="edge-row"><div class="edge-situation">Транзакція в системі відсутня в CSV</div><div class="edge-behavior">Можлива помилка парсингу → admin alert для перевірки</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ INTEGRATIONS ══════════════════════════ -->
+<section id="integrations">
+  <div class="section-label">// 9 — integrations</div>
+  <h2>Integrations</h2>
+
+  <div class="card-grid card-grid-3">
+
+    <div class="integration-card">
+      <div class="integration-title">Gmail API (OAuth 2.0)</div>
+      <div class="kv-row"><span class="kv-key">Scopes</span><span class="kv-val" style="font-size:10px; word-break:break-all;">gmail.readonly<br>gmail.modify</span></div>
+      <div class="kv-row"><span class="kv-key">Watch topic</span><span class="kv-val">Google Cloud Pub/Sub topic</span></div>
+      <div class="kv-row"><span class="kv-key">Watch label</span><span class="kv-val">INBOX</span></div>
+      <div class="kv-row"><span class="kv-key">Webhook</span><span class="kv-val">POST /webhooks/gmail/push</span></div>
+      <div class="kv-row"><span class="kv-key">Auth</span><span class="kv-val">Service account або OAuth refresh token</span></div>
+      <div class="kv-row"><span class="kv-key">Watch TTL</span><span class="kv-val">7 днів (renewal кожні 6)</span></div>
+    </div>
+
+    <div class="integration-card">
+      <div class="integration-title">Zapier (Ticket Creation)</div>
+      <div class="kv-row"><span class="kv-key">Метод</span><span class="kv-val">Webhook (Catch Hook)</span></div>
+      <div class="kv-row"><span class="kv-key">Payload →</span><span class="kv-val" style="font-size:10px;">sender_name<br>amount<br>zelle_tx_id<br>email_date<br>billing_tx_id</span></div>
+      <div class="kv-row"><span class="kv-key">Response ←</span><span class="kv-val">{ ticket_number } → зберегти в ZelleTransaction</span></div>
+      <div class="kv-row"><span class="kv-key">Trigger</span><span class="kv-val">Тільки якщо alias NOT FOUND</span></div>
+    </div>
+
+    <div class="integration-card">
+      <div class="integration-title">Billing Internal</div>
+      <div class="kv-row"><span class="kv-key">Top-up</span><span class="kv-val">BalanceService<br>.top_up(client_id, amount, metadata)</span></div>
+      <div class="kv-row"><span class="kv-key">Webhook</span><span class="kv-val">balance.topped_up → SPARK</span></div>
+      <div class="kv-row"><span class="kv-key">Metadata</span><span class="kv-val">payment_method: "zelle"<br>zelle_tx_id: "..."</span></div>
+      <div class="kv-row"><span class="kv-key">SPARK знає?</span><span class="kv-val" style="color:var(--green);">НІ — для SPARK це звичайний top-up</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════ ENV ══════════════════════════ -->
+<section id="env">
+  <div class="section-label">// 10 — env variables</div>
+  <h2>ENV Variables (нові)</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Опис</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="env-key">GMAIL_CLIENT_ID</span></td><td>OAuth client ID для Gmail API</td></tr>
+        <tr><td><span class="env-key">GMAIL_CLIENT_SECRET</span></td><td>OAuth client secret</td></tr>
+        <tr><td><span class="env-key">GMAIL_REFRESH_TOKEN</span></td><td>Refresh token для доступу до пошти</td></tr>
+        <tr><td><span class="env-key">GMAIL_PUBSUB_TOPIC</span></td><td>Google Pub/Sub topic name</td></tr>
+        <tr><td><span class="env-key">GMAIL_PUSH_ENDPOINT</span></td><td>URL для push notifications від Pub/Sub</td></tr>
+        <tr><td><span class="env-key">ZAPIER_WEBHOOK_URL</span></td><td>URL Zapier catch hook для створення тікетів</td></tr>
+        <tr><td><span class="env-key">ZELLE_RECONCILIATION_ENABLED</span></td><td><code>true</code> / <code>false</code></td></tr>
+        <tr><td><span class="env-key">ZELLE_RECONCILIATION_CRON</span></td><td>Cron schedule. Default: <code>0 8 * * *</code> (щодня о 8:00)</td></tr>
+        <tr><td><span class="env-key">ZELLE_FALLBACK_POLLING_INTERVAL</span></td><td>Інтервал fallback polling у секундах. Default: <code>300</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════ ENDPOINTS ══════════════════════════ -->
+<section id="endpoints">
+  <div class="section-label">// 11 — admin api</div>
+  <h2>Admin API Endpoints</h2>
+
+  <p style="margin-bottom:20px;">Base path: <code>/api/v1/avenlance/zelle</code></p>
+
+  <div class="endpoint-card">
+    <span class="method method-get">GET</span>
+    <div>
+      <div class="endpoint-path">/transactions</div>
+      <div class="endpoint-desc">Список транзакцій. Фільтр по <code>status</code>: pending, matched, processed, failed, manual</div>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <span class="method method-get">GET</span>
+    <div>
+      <div class="endpoint-path">/transactions/:id</div>
+      <div class="endpoint-desc">Деталі однієї транзакції (всі поля, включаючи email_message_id та error_message)</div>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <span class="method method-post">POST</span>
+    <div>
+      <div class="endpoint-path">/transactions/:id/reprocess</div>
+      <div class="endpoint-desc">Перезапустити alias matching для транзакції. Використовувати після додавання нового alias</div>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <span class="method method-post">POST</span>
+    <div>
+      <div class="endpoint-path">/transactions/:id/manual_match</div>
+      <div class="endpoint-desc">Ручна прив'язка до клієнта. Body: <code>{"{"} client_id: UUID, create_alias: bool {"}"}</code></div>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <span class="method method-post">POST</span>
+    <div>
+      <div class="endpoint-path">/reconciliation</div>
+      <div class="endpoint-desc">Завантажити CSV файл для звірки. Multipart form-data</div>
+    </div>
+  </div>
+
+  <div class="endpoint-card">
+    <span class="method method-get">GET</span>
+    <div>
+      <div class="endpoint-path">/reconciliation/report</div>
+      <div class="endpoint-desc">Результат та статистика останньої звірки (matched, mismatches, new transactions знайдених в CSV)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ MONITORING ══════════════════════════ -->
+<section id="monitoring">
+  <div class="section-label">// 12 — monitoring & alerts</div>
+  <h2>Monitoring & Alerts</h2>
+
+  <div class="card-grid card-grid-3">
+
+    <div class="metric-card">
+      <div class="metric-name">📥 Pending transactions</div>
+      <div class="metric-threshold">Alert: &gt; 5 за годину</div>
+      <p style="margin-top:10px; font-size:12px;">Занадто багато unmatched транзакцій — потрібна увага адміна</p>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-name">❌ Parse failures</div>
+      <div class="metric-threshold">Alert: &gt; 2 за годину</div>
+      <p style="margin-top:10px; font-size:12px;">Chase змінив формат email або нестандартний лист</p>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-name">⏱ Gmail push latency</div>
+      <div class="metric-threshold">Alert: last push &gt; 15 min ago</div>
+      <p style="margin-top:10px; font-size:12px;">Активувати fallback polling якщо push не дійшов</p>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-name">📊 Reconciliation mismatches</div>
+      <div class="metric-threshold">Alert: будь-яке невідповідність</div>
+      <p style="margin-top:10px; font-size:12px;">Кожен mismatch — потенційна проблема для адміна</p>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-name">⏳ Watch expiration</div>
+      <div class="metric-threshold">Alert: &lt; 24h до expiry</div>
+      <p style="margin-top:10px; font-size:12px;">Cron не спрацював або помилка оновлення watch</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════ ROADMAP ══════════════════════════ -->
+<section id="roadmap">
+  <div class="section-label">// 13 — implementation roadmap</div>
+  <h2>Implementation Roadmap</h2>
+
+  <p style="margin-bottom:24px;">Рекомендований порядок реалізації. Кожен крок залежить від попереднього.</p>
+
+  <div class="roadmap-step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Data Model</div><p class="step-desc">Міграції для ZelleTransaction + інтеграція з існуючою ZelleAlias. Встановити індекси.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">2</div><div class="step-content"><div class="step-title">GmailAdapter</div><p class="step-desc">OAuth setup, підключення до Gmail API, парсинг HTML шаблону Chase email. Будуть надані EML зразки.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">3</div><div class="step-content"><div class="step-title">ZelleMatchingService</div><p class="step-desc">Alias lookup з нормалізацією: lowercase + trim whitespace. Case-insensitive пошук.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">4</div><div class="step-content"><div class="step-title">ZelleProcessingJob</div><p class="step-desc">Оркестрація main flow: parse → dedup → match → top_up або create_ticket.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Pub/Sub + Webhook</div><p class="step-desc">Google Cloud Pub/Sub topic + POST /webhooks/gmail/push endpoint для real-time trigger.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">6</div><div class="step-content"><div class="step-title">Fallback Polling</div><p class="step-desc">Cron кожні 5 хвилин як safety net якщо push не дійшов. + Watch renewal cron кожні 6 днів.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">7</div><div class="step-content"><div class="step-title">Admin Endpoints</div><p class="step-desc">Pending list, reprocess, manual match. Всі 6 endpoints з /api/v1/avenlance/zelle/...</p></div></div>
+  <div class="roadmap-step"><div class="step-num">8</div><div class="step-content"><div class="step-title">Zapier Integration</div><p class="step-desc">Webhook до Zapier catch hook для створення тікетів при unmatched транзакціях.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">9</div><div class="step-content"><div class="step-title">Reconciliation</div><p class="step-desc">CSV upload + matching. ZelleReconciliationJob з configurable cron.</p></div></div>
+  <div class="roadmap-step"><div class="step-num">10</div><div class="step-content"><div class="step-title">Monitoring</div><p class="step-desc">Alerts та метрики: pending count, parse failures, push latency, watch expiration.</p></div></div>
+</section>
+
+<!-- ══════════════════════════ TESTING ══════════════════════════ -->
+<section id="testing">
+  <div class="section-label">// 14 — testing</div>
+  <h2>Testing Plan (Phase 4 мінімум)</h2>
+
+  <div class="card-grid card-grid-2">
+
+    <div class="card">
+      <h3 style="margin-bottom:14px;">Unit Tests</h3>
+      <div class="test-item"><span class="test-type test-unit">UNIT</span><span>Parse Chase email → extract sender_name, amount, zelle_tx_id</span></div>
+      <div class="test-item"><span class="test-type test-unit">UNIT</span><span>Alias match: exact, case-insensitive, trimmed whitespace</span></div>
+      <div class="test-item"><span class="test-type test-unit">UNIT</span><span>Alias not found → pending + ticket created</span></div>
+      <div class="test-item"><span class="test-type test-unit">UNIT</span><span>Dedup by zelle_tx_id (skip duplicate)</span></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:14px;">Integration / E2E Tests</h3>
+      <div class="test-item"><span class="test-type test-int">E2E</span><span>Full flow: email → balance updated</span></div>
+      <div class="test-item"><span class="test-type test-int">INT</span><span>Reprocess after alias added → processes correctly</span></div>
+      <div class="test-item"><span class="test-type test-int">INT</span><span>Manual match with alias creation</span></div>
+      <div class="test-item"><span class="test-type test-int">INT</span><span>Reconciliation: CSV finds missing TX → auto top-up</span></div>
+      <div class="test-item"><span class="test-type test-int">INT</span><span>Gmail push webhook → processing triggered</span></div>
+      <div class="test-item"><span class="test-type test-int">INT</span><span>Fallback polling activates when push dies</span></div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#161b22',
+      primaryColor: '#1f2d45',
+      primaryTextColor: '#e6edf3',
+      primaryBorderColor: '#58a6ff',
+      lineColor: '#58a6ff',
+      secondaryColor: '#21262d',
+      tertiaryColor: '#0d2816',
+      edgeLabelBackground: '#161b22',
+      nodeTextColor: '#e6edf3',
+      clusterBkg: '#161b22',
+      titleColor: '#e6edf3',
+      fontFamily: 'JetBrains Mono, Fira Code, Consolas, monospace',
+      fontSize: '13px',
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+      htmlLabels: true,
+    }
+  });
+</script>
+
+</body>
+</html>
